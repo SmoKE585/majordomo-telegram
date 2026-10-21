@@ -46,8 +46,17 @@ body.md-admin-shell .md-tlg-bot-avatar img {
     object-fit: cover;
 }
 
-body.md-admin-shell .md-tlg-bot-avatar--empty {
-    background: linear-gradient(145deg, var(--md-ui-primary-soft), var(--md-ui-surface-2));
+body.md-admin-shell .md-tlg-bot-avatar--initials {
+    background: var(--md-ui-primary-soft);
+    border-color: transparent;
+    color: var(--md-ui-primary);
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: .03em;
+}
+
+body.md-admin-shell .md-tlg-bot-avatar--initials:hover {
+    color: var(--md-ui-primary);
 }
 
 body.md-admin-shell .md-tlg-bot-avatar--sm {

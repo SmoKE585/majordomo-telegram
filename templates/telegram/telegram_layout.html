@@ -5,9 +5,9 @@
     <header class="md-ui-hero md-tlg-hero">
         <div class="md-tlg-hero__main">
             [#if BOT_AVATAR!=""#]
-            <span class="md-tlg-bot-avatar"><img src="[#BOT_AVATAR#]" alt="" width="72" height="72"></span>
+            <span class="md-tlg-bot-avatar" title="[#BOT_TITLE#]"><img src="[#BOT_AVATAR#]" alt="" width="72" height="72"></span>
             [#else#]
-            <span class="md-tlg-bot-avatar md-tlg-bot-avatar--empty"><i class="ti ti-brand-telegram" aria-hidden="true"></i></span>
+            <span class="md-tlg-bot-avatar md-tlg-bot-avatar--initials" title="[#BOT_TITLE#]" aria-hidden="true">[#BOT_INITIALS#]</span>
             [#endif#]
             <div class="md-tlg-hero__text">
                 <div class="md-ui-hero__eyebrow"><i class="ti ti-brand-telegram" aria-hidden="true"></i>Telegram</div>

@@ -1636,6 +1636,7 @@ class telegram extends module
         $out['BOT_AVATAR'] = md_tlg_bot_avatar($this->config['TLG_BOT_ID']);
         $out['BOT_LINK'] = $this->config['TLG_BOT_USERNAME'] !== '' ? 'https://t.me/' . rawurlencode($this->config['TLG_BOT_USERNAME']) : '';
         $out['BOT_TITLE'] = $out['BOT_NAME'] !== '' ? $out['BOT_NAME'] : 'Telegram-бот';
+        $out['BOT_INITIALS'] = md_tlg_h(md_tlg_initials($this->config['TLG_BOT_NAME'] !== '' ? $this->config['TLG_BOT_NAME'] : 'Telegram'));
         $out['BOT_SUBTITLE'] = $out['BOT_USERNAME'] !== '' ? '@' . $out['BOT_USERNAME'] : 'Бот ещё не проверен';
         $out['TRANSPORT_LABEL'] = md_tlg_h($this->api->describeTransport());
         $out['TRANSPORT'] = md_tlg_h($this->config['TLG_TRANSPORT']);
