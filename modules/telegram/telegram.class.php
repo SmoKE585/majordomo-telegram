@@ -792,6 +792,9 @@ class telegram extends module
         if ($url === '') {
             $url = rtrim(BASE_URL, '/') . '/webhook_telegram.php';
         }
+        if (!preg_match('#^https?://#i', $url)) {
+            $url = 'https://' . ltrim($url, '/');
+        }
         if (!preg_match('#^https://#i', $url)) {
             md_tlg_json(array(
                 'ok' => false,
@@ -1316,6 +1319,9 @@ class telegram extends module
         $this->config['TLG_WEBHOOK_URL'] = trim((string)gr('tlg_webhook_url'));
         if ($this->config['TLG_WEBHOOK'] && $this->config['TLG_WEBHOOK_URL'] === '') {
             $this->config['TLG_WEBHOOK_URL'] = rtrim(BASE_URL, '/') . '/webhook_telegram.php';
+        }
+        if ($this->config['TLG_WEBHOOK_URL'] !== '' && !preg_match('#^https?://#i', $this->config['TLG_WEBHOOK_URL'])) {
+            $this->config['TLG_WEBHOOK_URL'] = 'https://' . ltrim($this->config['TLG_WEBHOOK_URL'], '/');
         }
         $secret = trim((string)gr('tlg_webhook_secret'));
         if ($secret !== '') {
