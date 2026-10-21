@@ -1,0 +1,263 @@
+<!--#
+ Telegram help: setup, transport, commands/events API, troubleshooting.
+#-->
+<div class="md-tlg-help">
+    <section class="md-card" aria-labelledby="mdTlgHelpStart">
+        <header class="md-card__head">
+            <div class="md-card__titles">
+                <div class="md-card__eyebrow">Быстрый старт</div>
+                <h2 class="md-card__title" id="mdTlgHelpStart"><i class="ti ti-rocket" aria-hidden="true"></i>Пять шагов до рабочего бота</h2>
+                <p class="md-card__subtitle">Настройка занимает несколько минут, если есть доступ к my.telegram.org и HTTPS-домен.</p>
+            </div>
+        </header>
+        <div class="md-card__body">
+            <div class="md-tlg-steps">
+                <div class="md-tlg-step">
+                    <span class="md-tlg-step__num">1</span>
+                    <div><strong>Создайте бота</strong><p>Напишите <a href="https://t.me/BotFather" target="_blank" rel="noopener">@BotFather</a> команду <code>/newbot</code>, задайте имя и получите токен вида <code>123456789:AAHe…</code>.</p></div>
+                </div>
+                <div class="md-tlg-step">
+                    <span class="md-tlg-step__num">2</span>
+                    <div><strong>Сохраните токен</strong><p>Откройте <a href="<#ROOTHTML#>panel/telegram.html?view_mode=settings">Настройки</a>, вставьте токен и нажмите «Сохранить». Затем «Проверить связь» — имя бота и аватар подтянутся автоматически.</p></div>
+                </div>
+                <div class="md-tlg-step">
+                    <span class="md-tlg-step__num">3</span>
+                    <div><strong>Добавьте пользователя</strong><p>Пользователь отправляет боту <code>/start</code>, после чего появляется в списке. Включите нужные права и привяжите его к пользователю MajorDoMo.</p></div>
+                </div>
+                <div class="md-tlg-step">
+                    <span class="md-tlg-step__num">4</span>
+                    <div><strong>Создайте команду</strong><p>Например <code>/ping</code> с кодом <code>return 'Pong!';</code>. Команда появится в клавиатуре, а меню Telegram обновится кнопкой «Меню команд».</p></div>
+                </div>
+                <div class="md-tlg-step">
+                    <span class="md-tlg-step__num">5</span>
+                    <div><strong>Запустите приём</strong><p>Цикл <code>telegram</code> запускается в разделе «Циклы». Альтернатива — webhook: быстрее, но нужен HTTPS-домен.</p></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="md-card" id="transport" aria-labelledby="mdTlgHelpTransport">
+        <header class="md-card__head">
+            <div class="md-card__titles">
+                <div class="md-card__eyebrow">Сеть</div>
+                <h2 class="md-card__title" id="mdTlgHelpTransport"><i class="ti ti-route" aria-hidden="true"></i>Если Telegram недоступен</h2>
+                <p class="md-card__subtitle">Bot API — обычный HTTPS. Выберите способ, который подходит вашей инфраструктуре.</p>
+            </div>
+            <div class="md-card__actions"><a href="<#ROOTHTML#>panel/telegram.html?view_mode=settings#mdTlgTransportCard" class="md-btn md-btn--secondary md-btn--sm">Открыть настройки</a></div>
+        </header>
+        <div class="md-card__body">
+            <div class="md-tlg-compare">
+                <div class="md-tlg-compare__item">
+                    <div class="md-tlg-compare__head"><span class="md-tlg-tone--success"><i class="ti ti-plug" aria-hidden="true"></i></span><strong>HTTP/SOCKS5-прокси</strong><span class="md-badge md-badge--success">просто</span></div>
+                    <p>Подходит, если есть рабочий прокси. Для Tor: <code>127.0.0.1:9050</code>, тип <code>SOCKS5</code> или <code>SOCKS5 + remote DNS</code>.</p>
+                    <ul class="md-tlg-list">
+                        <li>Плюс: настраивается за минуту.</li>
+                        <li>Минус: прокси видит токен и трафик; нужен доверенный сервер.</li>
+                    </ul>
+                </div>
+                <div class="md-tlg-compare__item">
+                    <div class="md-tlg-compare__head"><span class="md-tlg-tone--info"><i class="ti ti-arrows-shuffle" aria-hidden="true"></i></span><strong>Прозрачный прокси / VPN</strong><span class="md-badge md-badge--info">системно</span></div>
+                    <p>cURL не знает о прокси: маршрут задаёт ОС. Подходит VPN, tun2socks, redsocks, политика маршрутизации или nginx stream со SNI-роутингом.</p>
+                    <ul class="md-tlg-list">
+                        <li>Плюс: не нужно хранить пароль прокси в модуле.</li>
+                        <li>Минус: настройка выходит за пределы MajorDoMo, ошибки сложнее диагностировать.</li>
+                    </ul>
+                </div>
+                <div class="md-tlg-compare__item md-tlg-compare__item--wide">
+                    <div class="md-tlg-compare__head"><span class="md-tlg-tone--primary"><i class="ti ti-server-2" aria-hidden="true"></i></span><strong>Локальный Bot API (MTProto)</strong><span class="md-badge md-badge--primary">надёжно</span></div>
+                    <p>Рядом с MajorDoMo запускается <code>telegram-bot-api</code>. Он общается с Telegram по MTProto и отдаёт Bot API на <code>127.0.0.1:8081</code>. PHP ходит на localhost и не зависит от блокировок HTTPS.</p>
+                    <ul class="md-tlg-list">
+                        <li>Плюс: устойчиво к блокировкам, не нужен внешний прокси.</li>
+                        <li>Минус: нужен <code>api_id</code>/<code>api_hash</code> с my.telegram.org и запуск отдельного контейнера/сервиса.</li>
+                    </ul>
+                    <div class="md-tlg-codeblock">
+                        <div class="md-tlg-codeblock__head">
+                            <span>Запуск</span>
+                            <button type="button" class="md-btn md-btn--ghost md-btn--sm" data-md-tlg-copy-target="mdTlgHelpBotApi"><i class="ti ti-copy" aria-hidden="true"></i>Копировать</button>
+                        </div>
+                        <pre class="md-tlg-pre" id="mdTlgHelpBotApi">[#EXAMPLE_BOT_API#]</pre>
+                    </div>
+                </div>
+            </div>
+            <div class="md-alert md-alert--warning" role="status">
+                <i class="ti ti-alert-triangle md-alert__icon" aria-hidden="true"></i>
+                <div class="md-alert__body">
+                    <div class="md-alert__title">MTProto-прокси ≠ Bot API</div>
+                    <div class="md-alert__text">Ссылки <code>tg://proxy?…</code> описывают MTProto-прокси для клиентов Telegram. Bot API через них напрямую не работает. Используйте локальный Bot API (он сам ходит по MTProto) или прозрачный прокси/VPN.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="md-card" id="webhook" aria-labelledby="mdTlgHelpWebhook">
+        <header class="md-card__head">
+            <div class="md-card__titles">
+                <div class="md-card__eyebrow">Доставка</div>
+                <h2 class="md-card__title" id="mdTlgHelpWebhook"><i class="ti ti-webhook" aria-hidden="true"></i>Webhook или long polling</h2>
+            </div>
+        </header>
+        <div class="md-card__body">
+            <div class="md-table__scroll">
+                <table class="md-table md-tlg-compare-table">
+                    <thead><tr><th>Критерий</th><th>Long polling</th><th>Webhook</th></tr></thead>
+                    <tbody>
+                        <tr><td>Требования</td><td>Только исходящий HTTPS</td><td>Внешний HTTPS-домен и сертификат</td></tr>
+                        <tr><td>Скорость</td><td>До нескольких секунд</td><td>Почти мгновенно</td></tr>
+                        <tr><td>Нагрузка</td><td>Постоянный запрос в цикле</td><td>Запрос только при событии</td></tr>
+                        <tr><td>Зависимость от цикла</td><td>Цикл должен быть запущен</td><td>Цикл не нужен</td></tr>
+                        <tr><td>Конфликт</td><td>Не работает при активном webhook (409)</td><td>Не работает getUpdates</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="md-field__hint">Адрес точки входа: <code>[#WEBHOOK_URL_VALUE#]</code>. Файл <code>public/webhook_telegram.php</code> уже входит в модуль; убедитесь, что он доступен по HTTPS.</div>
+        </div>
+    </section>
+
+    <section class="md-card" id="commands" aria-labelledby="mdTlgHelpCommands">
+        <header class="md-card__head">
+            <div class="md-card__titles">
+                <div class="md-card__eyebrow">Команды</div>
+                <h2 class="md-card__title" id="mdTlgHelpCommands"><i class="ti ti-terminal-2" aria-hidden="true"></i>Как писать команды</h2>
+                <p class="md-card__subtitle">Команда срабатывает после точного совпадения названия или псевдонима; остаток строки приходит в <code>$args</code>.</p>
+            </div>
+        </header>
+        <div class="md-card__body">
+            <div class="md-tlg-doc-grid">
+                [#begin COMMAND_EXAMPLES#]
+                <div class="md-tlg-doc">
+                    <div class="md-tlg-doc__head">
+                        <strong>[#TITLE#]</strong>
+                        <button type="button" class="md-btn md-btn--ghost md-btn--sm" data-md-tlg-copy-target="mdTlgCmdExample[#KEY#]"><i class="ti ti-copy" aria-hidden="true"></i></button>
+                    </div>
+                    <p>[#DESCRIPTION#]</p>
+                    <pre class="md-tlg-pre" id="mdTlgCmdExample[#KEY#]">[#CODE#]</pre>
+                </div>
+                [#end COMMAND_EXAMPLES#]
+            </div>
+
+            <h3 class="md-tlg-subtitle">Переменные в коде команды</h3>
+            <div class="md-tlg-vars">
+                <div class="md-tlg-var"><code>$chat_id</code><span>ID чата, куда пришло сообщение</span></div>
+                <div class="md-tlg-var"><code>$text</code><span>Полный текст сообщения</span></div>
+                <div class="md-tlg-var"><code>$args</code><span>Текст после команды</span></div>
+                <div class="md-tlg-var"><code>$command</code><span>Сработавшая команда</span></div>
+                <div class="md-tlg-var"><code>$user</code><span>Запись из <code>tlg_user</code></span></div>
+                <div class="md-tlg-var"><code>$telegram_module</code><span>Экземпляр модуля для отправки сообщений</span></div>
+            </div>
+
+            <h3 class="md-tlg-subtitle">Программный API из сценариев</h3>
+            <div class="md-tlg-doc-grid">
+                <div class="md-tlg-doc">
+                    <div class="md-tlg-doc__head"><strong>Текст</strong><button type="button" class="md-btn md-btn--ghost md-btn--sm" data-md-tlg-copy-target="mdTlgApiText"><i class="ti ti-copy" aria-hidden="true"></i></button></div>
+                    <pre class="md-tlg-pre" id="mdTlgApiText">include_once(DIR_MODULES . 'telegram/telegram.class.php');
+$telegram = new telegram();
+
+$telegram->sendMessageToUser($chat_id, 'Текст <b>HTML</b>');
+$telegram->sendMessageToAdmin('Уведомление администратору');
+$telegram->sendMessageToAll('Всем пользователям');
+$telegram->sendMessageToUser($chat_id, 'Тихо', null, '', true);</pre>
+                </div>
+                <div class="md-tlg-doc">
+                    <div class="md-tlg-doc__head"><strong>Медиа</strong><button type="button" class="md-btn md-btn--ghost md-btn--sm" data-md-tlg-copy-target="mdTlgApiMedia"><i class="ti ti-copy" aria-hidden="true"></i></button></div>
+                    <pre class="md-tlg-pre" id="mdTlgApiMedia">$telegram->sendImageToUser($chat_id, '/path/photo.jpg', 'Подпись');
+$telegram->sendVideoToAdmin('/path/video.mp4', 'Видео');
+$telegram->sendFileToUser($chat_id, '/path/report.pdf');
+$telegram->sendVoiceToUser($chat_id, '/path/voice.ogg');
+$telegram->sendLocationToAdmin(55.75, 37.61);
+$telegram->sendVenueToUser($chat_id, 55.75, 37.61, 'Дом', 'Москва');</pre>
+                </div>
+                <div class="md-tlg-doc">
+                    <div class="md-tlg-doc__head"><strong>Сообщения и кнопки</strong><button type="button" class="md-btn md-btn--ghost md-btn--sm" data-md-tlg-copy-target="mdTlgApiEdit"><i class="ti ti-copy" aria-hidden="true"></i></button></div>
+                    <pre class="md-tlg-pre" id="mdTlgApiEdit">$telegram->editMessage($chat_id, $message_id, 'Новый текст');
+$telegram->deleteMessage($chat_id, $message_id);
+$telegram->sendAnswerCallbackQuery($callback_id, 'Принято', true);
+
+$inline = $telegram->buildInlineKeyBoard([
+    [
+        $telegram->buildInlineKeyboardButton('Свет', '', 'cmd:light'),
+        $telegram->buildInlineKeyboardButton('Статус', '', 'cmd:status'),
+    ],
+]);
+$telegram->sendMessage($chat_id, 'Выберите:', '', 'HTML', $inline);</pre>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="md-card" id="events" aria-labelledby="mdTlgHelpEvents">
+        <header class="md-card__head">
+            <div class="md-card__titles">
+                <div class="md-card__eyebrow">События</div>
+                <h2 class="md-card__title" id="mdTlgHelpEvents"><i class="ti ti-bolt" aria-hidden="true"></i>Типы событий и переменные</h2>
+                <p class="md-card__subtitle">Событие — обработчик входящего обновления. Включённые события выполняются по порядку, <code>$skip = true;</code> останавливает цепочку.</p>
+            </div>
+        </header>
+        <div class="md-card__body">
+            <div class="md-tlg-event-types">
+                [#begin EVENT_TYPES#]
+                <details class="md-tlg-event-type">
+                    <summary>
+                        <span class="md-tlg-event-type__icon md-tlg-tone--[#tone#]"><i class="ti ti-[#icon#]" aria-hidden="true"></i></span>
+                        <span class="md-tlg-event-type__title">[#label#]</span>
+                        <span class="md-tlg-event-type__vars"><code>[#vars#]</code></span>
+                        <i class="ti ti-chevron-down md-tlg-event-type__chevron" aria-hidden="true"></i>
+                    </summary>
+                    <div class="md-tlg-event-type__body">
+                        <p>[#description#]</p>
+                        <div class="md-tlg-codeblock">
+                            <div class="md-tlg-codeblock__head">
+                                <span>Пример</span>
+                                <button type="button" class="md-btn md-btn--ghost md-btn--sm" data-md-tlg-copy-target="mdTlgEventType[#VALUE#]"><i class="ti ti-copy" aria-hidden="true"></i>Копировать</button>
+                            </div>
+                            <pre class="md-tlg-pre" id="mdTlgEventType[#VALUE#]">[#EXAMPLE#]</pre>
+                        </div>
+                    </div>
+                </details>
+                [#end EVENT_TYPES#]
+            </div>
+        </div>
+    </section>
+
+    <section class="md-card" aria-labelledby="mdTlgHelpTrouble">
+        <header class="md-card__head">
+            <div class="md-card__titles">
+                <div class="md-card__eyebrow">Диагностика</div>
+                <h2 class="md-card__title" id="mdTlgHelpTrouble"><i class="ti ti-bug" aria-hidden="true"></i>Частые проблемы</h2>
+            </div>
+        </header>
+        <div class="md-card__body">
+            <div class="md-tlg-trouble">
+                <div class="md-tlg-trouble__item">
+                    <strong>401 Unauthorized</strong>
+                    <p>Токен неверен или отозван. Получите новый у @BotFather и пересохраните настройки.</p>
+                </div>
+                <div class="md-tlg-trouble__item">
+                    <strong>409 Conflict: can't use getUpdates while webhook is active</strong>
+                    <p>Настройки webhook и опроса конфликтуют. Нажмите «Снять webhook» или включите режим webhook.</p>
+                </div>
+                <div class="md-tlg-trouble__item">
+                    <strong>Chat not found</strong>
+                    <p>Пользователь не начинал диалог с ботом или chat_id указан с ошибкой. Для канала добавьте бота администратором.</p>
+                </div>
+                <div class="md-tlg-trouble__item">
+                    <strong>Время ожидания истекло</strong>
+                    <p>Проверьте прокси, VPN или локальный Bot API. Увеличьте «Таймаут запроса», если канал медленный.</p>
+                </div>
+                <div class="md-tlg-trouble__item">
+                    <strong>Кнопки с callback не работают</strong>
+                    <p>Включите событие «Нажатие inline-кнопки» или используйте callback_data вида <code>cmd:имя</code>.</p>
+                </div>
+                <div class="md-tlg-trouble__item">
+                    <strong>Нет уведомлений из системы</strong>
+                    <p>У пользователя должен быть включён флаг «Уведомления», а уровень сообщения — не ниже приоритета истории.</p>
+                </div>
+            </div>
+            <div class="md-tlg-inline-actions">
+                <a href="<#ROOTHTML#>panel/telegram.html?tab=log" class="md-btn md-btn--secondary md-btn--sm"><i class="ti ti-file-text" aria-hidden="true"></i>Открыть журнал</a>
+                <a href="<#ROOTHTML#>panel/telegram.html?tab=history&amp;direction=2" class="md-btn md-btn--ghost md-btn--sm"><i class="ti ti-alert-triangle" aria-hidden="true"></i>Ошибки в истории</a>
+                <a href="<#ROOTHTML#>panel/telegram.html?view_mode=settings" class="md-btn md-btn--primary md-btn--sm"><i class="ti ti-settings" aria-hidden="true"></i>Настройки</a>
+            </div>
+        </div>
+    </section>
+</div>
+

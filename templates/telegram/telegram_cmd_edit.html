@@ -1,0 +1,298 @@
+<!--#
+ Telegram command card.
+#-->
+<div class="md-ui-page md-ui-page--stack md-tlg-page md-tlg-edit">
+    <header class="md-ui-hero">
+        <div>
+            <div class="md-ui-hero__eyebrow"><i class="ti ti-terminal-2" aria-hidden="true"></i>Команда Telegram</div>
+            <h1 class="md-ui-hero__title"><span class="md-tlg-title-slash">/</span>[#TITLE_HEADING#]</h1>
+            <div class="md-ui-hero__meta">
+                [#if ALIASES!=""#]<span class="md-ui-hero__meta-item"><i class="ti ti-tag" aria-hidden="true"></i>Псевдонимы: <strong>[#ALIASES#]</strong></span>[#endif#]
+                <span class="md-ui-hero__meta-item"><i class="ti ti-shield-lock" aria-hidden="true"></i>Запусков: <strong>[#RUNS#]</strong></span>
+                <span class="md-ui-hero__meta-item"><i class="ti ti-clock" aria-hidden="true"></i>Последний: <strong>[#LAST_RUN_HUMAN#]</strong></span>
+            </div>
+        </div>
+        <div class="md-ui-hero__actions">
+            <a href="<#ROOTHTML#>panel/telegram.html?tab=commands" class="md-btn md-btn--secondary">
+                <i class="ti ti-arrow-left" aria-hidden="true"></i><span class="md-btn__label">К командам</span>
+            </a>
+            [#if EXPORT_URL!=""#]
+            <a href="[#EXPORT_URL#]" class="md-btn md-btn--ghost">
+                <i class="ti ti-download" aria-hidden="true"></i><span class="md-btn__label">Экспорт</span>
+            </a>
+            <a href="<#ROOTHTML#>panel/telegram.html?view_mode=delete_cmd&amp;id=[#ID#]" class="md-btn md-btn--danger" data-md-confirm="Удалить команду /[#TITLE#]?">
+                <i class="ti ti-trash" aria-hidden="true"></i><span class="md-btn__label">Удалить</span>
+            </a>
+            [#endif#]
+        </div>
+    </header>
+
+    [#if SAVE_ERRORS#]
+    <div class="md-alert md-alert--danger" role="alert">
+        <i class="ti ti-alert-octagon md-alert__icon" aria-hidden="true"></i>
+        <div class="md-alert__body">
+            <div class="md-alert__title">Команда не сохранена</div>
+            <ul class="md-tlg-error-list">
+                [#begin SAVE_ERRORS#]
+                <li>[#VALUE#]</li>
+                [#end SAVE_ERRORS#]
+            </ul>
+        </div>
+    </div>
+    [#endif#]
+
+    <form action="<#ROOTHTML#>panel/telegram.html" method="post" name="frmCmd" class="md-tlg-edit-form">
+        <div class="md-ui-form-stack">
+            <section class="md-card" aria-labelledby="mdTlgCmdMain">
+                <header class="md-card__head">
+                    <div class="md-card__titles">
+                        <div class="md-card__eyebrow">Триггер</div>
+                        <h2 class="md-card__title" id="mdTlgCmdMain"><i class="ti ti-command" aria-hidden="true"></i>Как вызывается</h2>
+                        <p class="md-card__subtitle">Пользователь пишет команду в чат или нажимает кнопку клавиатуры.</p>
+                    </div>
+                </header>
+                <div class="md-card__body">
+                    <div class="md-ui-form-stack">
+                        <div class="md-ui-form-grid">
+                            <div class="md-field">
+                                <label class="md-field__label" for="mdTlgCmdTitle">Команда<span class="md-field__req" aria-hidden="true">*</span></label>
+                                <div class="md-field__control md-tlg-input-prefix">
+                                    <span class="md-tlg-input-prefix__addon">/</span>
+                                    <input type="text" class="md-input" id="mdTlgCmdTitle" name="title" value="[#TITLE#]" placeholder="ping" required spellcheck="false" maxlength="64">
+                                </div>
+                                <div class="md-field__hint">Без слэша. Можно набирать в любом регистре. Для меню Telegram используйте латиницу, цифры и подчёркивание.</div>
+                            </div>
+                            <div class="md-field">
+                                <label class="md-field__label" for="mdTlgCmdAliases">Псевдонимы</label>
+                                <div class="md-field__control">
+                                    <input type="text" class="md-input" id="mdTlgCmdAliases" name="aliases" value="[#ALIASES#]" placeholder="пинг, проверка" spellcheck="false">
+                                </div>
+                                <div class="md-field__hint">Через запятую. Например, <code>пинг, ping</code> — команда сработает на любой вариант.</div>
+                            </div>
+                        </div>
+
+                        <div class="md-field">
+                            <label class="md-field__label" for="mdTlgCmdDescription">Описание</label>
+                            <div class="md-field__control">
+                                <input type="text" class="md-input" id="mdTlgCmdDescription" name="description" value="[#DESCRIPTION#]" placeholder="Проверка связи: бот отвечает Pong!">
+                            </div>
+                            <div class="md-field__hint">Показывается в списке и в меню команд Telegram (до 256 символов).</div>
+                        </div>
+
+                        <div class="md-ui-form-grid">
+                            <div class="md-field">
+                                <label class="md-field__label" for="mdTlgCmdPriority">Приоритет</label>
+                                <div class="md-field__control">
+                                    <input type="number" class="md-input" id="mdTlgCmdPriority" name="priority" value="[#PRIORITY#]" min="0" max="999" step="1" inputmode="numeric">
+                                </div>
+                                <div class="md-field__hint">Чем больше, тем выше команда в списке и клавиатуре.</div>
+                            </div>
+                            <div class="md-field">
+                                <label class="md-field__label" for="mdTlgCmdParseMode">Формат ответа</label>
+                                <div class="md-field__control">
+                                    <select class="md-select" id="mdTlgCmdParseMode" name="parse_mode">
+                                        <option value="HTML" [#if PARSE_MODE="HTML"#]selected[#endif#]>HTML</option>
+                                        <option value="MarkdownV2" [#if PARSE_MODE="MarkdownV2"#]selected[#endif#]>MarkdownV2</option>
+                                        <option value="none" [#if PARSE_MODE="none"#]selected[#endif#]>Без разметки</option>
+                                    </select>
+                                </div>
+                                <div class="md-field__hint">HTML: <code>&lt;b&gt;жирный&lt;/b&gt;</code>, <code>&lt;code&gt;код&lt;/code&gt;</code>.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="md-card" aria-labelledby="mdTlgCmdAccess">
+                <header class="md-card__head">
+                    <div class="md-card__titles">
+                        <div class="md-card__eyebrow">Доступ</div>
+                        <h2 class="md-card__title" id="mdTlgCmdAccess"><i class="ti ti-shield-lock" aria-hidden="true"></i>Кому разрешена</h2>
+                        <p class="md-card__subtitle">Правила действуют и в чате, и для inline-кнопок с callback_data <code>cmd:…</code>.</p>
+                    </div>
+                </header>
+                <div class="md-card__body">
+                    <div class="md-ui-form-stack">
+                        <div class="md-field">
+                            <label class="md-field__label" for="mdTlgCmdAccessSelect">Режим доступа<span class="md-tlg-help-tip" data-bs-toggle="tooltip" data-bs-title="Администраторы всегда имеют доступ к режимам 1 и 2. Режим 3 доступен всем зарегистрированным."><i class="ti ti-info-circle" aria-hidden="true"></i></span></label>
+                            <div class="md-field__control">
+                                <select class="md-select" id="mdTlgCmdAccessSelect" name="access" data-md-tlg-access>
+                                    <option value="0" [#if ACCESS="0"#]selected[#endif#]>Отключена — никто не может вызвать</option>
+                                    <option value="1" [#if ACCESS="1"#]selected[#endif#]>Только администраторы бота</option>
+                                    <option value="2" [#if ACCESS="2"#]selected[#endif#]>Избранные пользователи из списка</option>
+                                    <option value="3" [#if ACCESS="3"#]selected[#endif#]>Все зарегистрированные пользователи</option>
+                                </select>
+                            </div>
+                            <div class="md-field__hint">Администраторы всегда имеют доступ к командам с режимами 1 и 2.</div>
+                        </div>
+
+                        <div class="md-tlg-panel" data-md-tlg-panel="access-users" [#if ACCESS!="1" AND ACCESS!="2"#]hidden[#endif#]>
+                            <div class="md-field">
+                                <span class="md-field__label">Пользователи</span>
+                                [#if LIST_ACCESS#]
+                                <div class="md-tlg-user-checklist">
+                                    [#begin LIST_ACCESS#]
+                                    <label class="md-check" for="mdTlgCmdUser[#ID#]">
+                                        <input class="md-check__input" id="mdTlgCmdUser[#ID#]" type="checkbox" name="users_id[]" value="[#ID#]" data-md-raw-checkbox[#if CHECKED="1"#] checked[#endif#]>
+                                        <span class="md-check__box" aria-hidden="true"><i class="ti ti-check"></i></span>
+                                        <span class="md-check__text">
+                                            <span class="md-check__label">[#NAME#] [#if IS_ADMIN="1"#]<span class="md-badge md-badge--danger">админ</span>[#endif#]</span>
+                                            [#if USERNAME!=""#]<span class="md-check__desc">[#USERNAME#]</span>[#endif#]
+                                        </span>
+                                    </label>
+                                    [#end LIST_ACCESS#]
+                                </div>
+                                [#else#]
+                                <div class="md-alert md-alert--warning" role="status">
+                                    <i class="ti ti-users-minus md-alert__icon" aria-hidden="true"></i>
+                                    <div class="md-alert__body"><div class="md-alert__text">Пользователей ещё нет. Сначала добавьте их на вкладке «Пользователи».</div></div>
+                                </div>
+                                [#endif#]
+                            </div>
+                        </div>
+
+                        <div class="md-field">
+                            <label class="md-field__label" for="mdTlgCmdShowMode">Клавиатура</label>
+                            <div class="md-field__control">
+                                <select class="md-select" id="mdTlgCmdShowMode" name="show_mode" data-md-tlg-show-mode>
+                                    <option value="1" [#if SHOW_MODE="1"#]selected[#endif#]>Показывать всегда</option>
+                                    <option value="2" [#if SHOW_MODE="2"#]selected[#endif#]>Скрыть</option>
+                                    <option value="3" [#if SHOW_MODE="3"#]selected[#endif#]>Показывать по условию</option>
+                                </select>
+                            </div>
+                            <div class="md-field__hint">Скрытая команда всё равно работает при вводе текста.</div>
+                        </div>
+
+                        <div class="md-tlg-panel" data-md-tlg-panel="condition" [#if SHOW_MODE!="3"#]hidden[#endif#]>
+                            <div class="md-ui-form-grid">
+                                <div class="md-field">
+                                    <label class="md-field__label" for="mdTlgCmdLinkedObject">Объект<span class="md-field__req" aria-hidden="true">*</span></label>
+                                    <div class="md-field__control">
+                                        <input type="text" class="md-input" id="mdTlgCmdLinkedObject" name="linked_object_new" value="[#LINKED_OBJECT#]" placeholder="Kitchen">
+                                    </div>
+                                </div>
+                                <div class="md-field">
+                                    <label class="md-field__label" for="mdTlgCmdLinkedProperty">Свойство<span class="md-field__req" aria-hidden="true">*</span></label>
+                                    <div class="md-field__control">
+                                        <input type="text" class="md-input" id="mdTlgCmdLinkedProperty" name="linked_property_new" value="[#LINKED_PROPERTY#]" placeholder="Light">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="md-ui-form-grid">
+                                <div class="md-field">
+                                    <label class="md-field__label" for="mdTlgCmdCondition">Условие</label>
+                                    <div class="md-field__control">
+                                        <select class="md-select" id="mdTlgCmdCondition" name="condition_new">
+                                            <option value="1" [#if CONDITION="1"#]selected[#endif#]>равно</option>
+                                            <option value="2" [#if CONDITION="2"#]selected[#endif#]>больше</option>
+                                            <option value="3" [#if CONDITION="3"#]selected[#endif#]>меньше</option>
+                                            <option value="4" [#if CONDITION="4"#]selected[#endif#]>не равно</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="md-field">
+                                    <label class="md-field__label" for="mdTlgCmdConditionValue">Значение</label>
+                                    <div class="md-field__control">
+                                        <input type="text" class="md-input" id="mdTlgCmdConditionValue" name="condition_value_new" value="[#CONDITION_VALUE#]" placeholder="1">
+                                    </div>
+                                </div>
+                            </div>
+                            [#module name="linkedobject" object_field="linked_object_new" property_field="linked_property_new" width="100%"#]
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="md-card md-tlg-code-card" aria-labelledby="mdTlgCmdCode">
+                <header class="md-card__head">
+                    <div class="md-card__titles">
+                        <div class="md-card__eyebrow">Обработчик</div>
+                        <h2 class="md-card__title" id="mdTlgCmdCode"><i class="ti ti-code" aria-hidden="true"></i>PHP-код</h2>
+                        <p class="md-card__subtitle">Доступны <code>$chat_id</code>, <code>$text</code>, <code>$args</code>, <code>$user</code>, <code>$telegram_module</code>. Верните строку — бот отправит её как ответ.</p>
+                    </div>
+                    <div class="md-card__actions">
+                        <div class="dropdown">
+                            <button type="button" class="md-btn md-btn--ghost md-btn--sm" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="ti ti-sparkles" aria-hidden="true"></i><span class="md-btn__label">Примеры</span><i class="ti ti-chevron-down" aria-hidden="true"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end md-menu">
+                                [#begin COMMAND_EXAMPLES#]
+                                <li>
+                                    <button type="button" class="dropdown-item" data-md-tlg-example-key="[#KEY#]" data-md-tlg-example-target="mdTlgCmdEditor">
+                                        <span class="md-tlg-menu-item"><strong>[#TITLE#]</strong><small>[#DESCRIPTION#]</small></span>
+                                    </button>
+                                </li>
+                                [#end COMMAND_EXAMPLES#]
+                            </ul>
+                        </div>
+                        <button type="button" class="md-btn md-btn--secondary md-btn--sm" data-md-tlg-validate-code data-md-tlg-code-target="mdTlgCmdEditor">
+                            <i class="ti ti-check" aria-hidden="true"></i><span class="md-btn__label">Проверить</span>
+                        </button>
+                    </div>
+                </header>
+                <div class="md-card__body">
+                    [#if SETTINGS_CODEEDITOR_TURNONSETTINGS != 1#]
+                    <div class="md-alert md-alert--warning" role="status">
+                        <i class="ti ti-alert-triangle md-alert__icon" aria-hidden="true"></i>
+                        <div class="md-alert__body"><div class="md-alert__text"><#LANG_CODEEDITOR_NOTY_TURNOFF#></div></div>
+                    </div>
+                    [#endif#]
+                    <div class="md-code-editor md-tlg-code-editor"
+                         data-code-editor
+                         data-code-editor-key="[#CODE_EDITOR_KEY#]"
+                         data-code-editor-mode="php"
+                         data-code-editor-theme="[#SETTINGS_CODEEDITOR_THEME#]"
+                         data-code-editor-autosave="0"
+                         data-code-editor-autoclose="[#SETTINGS_CODEEDITOR_AUTOCLOSEQUOTES#]"
+                         data-code-editor-wraplines="[#SETTINGS_CODEEDITOR_WRAPLINES#]"
+                         data-code-editor-min-lines="[#SETTINGS_CODEEDITOR_MIXLINE#]"
+                         data-code-editor-max-lines="[#SETTINGS_CODEEDITOR_SHOWLINE#]"
+                         data-code-editor-autofocus="0"
+                         data-code-editor-hide-errors-on-edit="1"
+                         data-code-editor-id="[#ID#]">
+                        <div class="md-code-editor__toolbar" data-code-editor-toolbar>
+                            <span class="md-code-editor__lang-badge">PHP</span>
+                            <span class="md-code-editor__toolbar-divider" aria-hidden="true"></span>
+                            <span class="md-code-editor__toolbar-spacer"></span>
+                            <span class="md-code-editor__status" data-code-editor-status aria-live="polite"></span>
+                            <button type="button" class="md-code-editor__icon-btn" data-code-editor-action="search" title="Найти (Ctrl+F)" aria-label="Найти">
+                                <i class="ti ti-search" aria-hidden="true"></i>
+                            </button>
+                            <button type="button" class="md-code-editor__icon-btn" data-code-editor-action="fullscreen" title="Полный экран (F11)" aria-label="Полный экран">
+                                <i class="ti ti-maximize" aria-hidden="true"></i>
+                            </button>
+                        </div>
+
+                        [#if ERR_CODE="1"#]
+                        <div class="md-code-editor__error" data-code-editor-error data-code-editor-old-code-b64="[#ERR_OLD_CODE_B64#]">
+                            <b>Ошибка в коде →</b> [#ERR_MESSAGE#]
+                            [#if ERR_LINE!="0"#]<div>Строка: [#ERR_LINE#]</div>[#endif#]
+                            <div class="md-code-editor__error-actions">
+                                <button type="button" class="md-btn md-btn--danger md-btn--sm" data-code-editor-action="restore-error">Восстановить предыдущий код</button>
+                            </div>
+                        </div>
+                        [#endif#]
+
+                        <textarea name="code" id="mdTlgCmdEditor" rows="14" class="md-textarea" spellcheck="false">[#CODE#]</textarea>
+                    </div>
+                    <div class="md-field__hint">Код выполняется через <code>eval()</code> в контексте метода модуля. Не используйте <code>exit</code> и не выводите отладочные строки — они попадут в ответ Telegram.</div>
+                    <div class="md-tlg-inline-result" data-md-tlg-code-result aria-live="polite"></div>
+                </div>
+            </section>
+        </div>
+
+        <div class="md-ui-form-actions">
+            <button type="submit" class="md-btn md-btn--primary">
+                <i class="ti ti-device-floppy" aria-hidden="true"></i><span class="md-btn__label">Сохранить команду</span>
+            </button>
+            <a href="<#ROOTHTML#>panel/telegram.html?tab=commands" class="md-btn md-btn--secondary">Отмена</a>
+        </div>
+
+        <input type="hidden" name="view_mode" value="edit_cmd">
+        <input type="hidden" name="id" value="[#ID#]">
+        <input type="hidden" name="mode" value="update">
+        <input type="hidden" name="tab" value="commands">
+    </form>
+</div>
+
+

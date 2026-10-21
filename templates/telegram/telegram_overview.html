@@ -1,0 +1,339 @@
+<!--#
+ Telegram overview: connection health, setup checklist and live activity.
+#-->
+<div class="md-ui-kpi-grid md-tlg-kpi-grid">
+    <div class="md-kpi md-kpi--primary">
+        <div class="md-kpi__top"><span class="md-kpi__icon"><i class="ti ti-users" aria-hidden="true"></i></span><span class="md-kpi__label">Пользователи</span></div>
+        <div class="md-kpi__value">[#USERS_TOTAL#]</div>
+        <div class="md-kpi__meta">Администраторов: [#USERS_ADMINS#]</div>
+    </div>
+    <div class="md-kpi md-kpi--info">
+        <div class="md-kpi__top"><span class="md-kpi__icon"><i class="ti ti-terminal-2" aria-hidden="true"></i></span><span class="md-kpi__label">Команды</span></div>
+        <div class="md-kpi__value">[#COMMANDS_TOTAL#]</div>
+        <div class="md-kpi__meta">Доступны в чате и клавиатуре</div>
+    </div>
+    <div class="md-kpi md-kpi--success">
+        <div class="md-kpi__top"><span class="md-kpi__icon"><i class="ti ti-bolt" aria-hidden="true"></i></span><span class="md-kpi__label">События</span></div>
+        <div class="md-kpi__value">[#EVENTS_ENABLED#]</div>
+        <div class="md-kpi__meta">Включено из [#EVENTS_TOTAL#]</div>
+    </div>
+    <div class="md-kpi md-kpi--neutral">
+        <div class="md-kpi__top"><span class="md-kpi__icon"><i class="ti ti-arrow-down-left" aria-hidden="true"></i></span><span class="md-kpi__label">Входящие за 24 ч</span></div>
+        <div class="md-kpi__value">[#MSG_IN_24H#]</div>
+        <div class="md-kpi__meta">Исходящих: [#MSG_OUT_24H#]</div>
+    </div>
+    <div class="md-kpi [#if MSG_ERR_24H!="0"#]md-kpi--danger[#else#]md-kpi--neutral[#endif#]">
+        <div class="md-kpi__top"><span class="md-kpi__icon"><i class="ti ti-alert-triangle" aria-hidden="true"></i></span><span class="md-kpi__label">Ошибки за 24 ч</span></div>
+        <div class="md-kpi__value">[#MSG_ERR_24H#]</div>
+        <div class="md-kpi__meta">[#if MSG_ERR_24H!="0"#]Проверьте журнал и историю[#else#]Ошибок нет[#endif#]</div>
+    </div>
+</div>
+
+<div class="md-tlg-overview-grid">
+    <section class="md-card md-tlg-connection" aria-labelledby="mdTlgConnectionTitle">
+        <header class="md-card__head">
+            <div class="md-card__titles">
+                <div class="md-card__eyebrow">Соединение</div>
+                <h2 class="md-card__title" id="mdTlgConnectionTitle"><i class="ti ti-plug-connected" aria-hidden="true"></i>Бот и канал обновлений</h2>
+                <p class="md-card__subtitle">Проверка токена, транспорт и режим получения сообщений.</p>
+            </div>
+            <div class="md-card__actions">
+                <button type="button" class="md-btn md-btn--secondary md-btn--sm" data-md-tlg-check>
+                    <i class="ti ti-activity" aria-hidden="true"></i><span class="md-btn__label">Проверить связь</span>
+                </button>
+            </div>
+        </header>
+        <div class="md-card__body">
+            <div class="md-tlg-status-line" data-md-tlg-check-result aria-live="polite">
+                [#if BOT_CHECKED="1"#]
+                <span class="md-tlg-status md-tlg-status--online"><span class="md-status__dot" aria-hidden="true"></span>Токен рабочий</span>
+                <span class="md-tlg-muted">проверен [#BOT_CHECKED_HUMAN#]</span>
+                [#else#]
+                <span class="md-tlg-status md-tlg-status--idle"><span class="md-status__dot" aria-hidden="true"></span>Ещё не проверялся</span>
+                <span class="md-tlg-muted">нажмите «Проверить связь»</span>
+                [#endif#]
+            </div>
+
+            <dl class="md-tlg-facts">
+                <div class="md-tlg-fact">
+                    <dt><i class="ti ti-key" aria-hidden="true"></i>Токен</dt>
+                    <dd><code>[#TOKEN_MASK#]</code>[#if TOKEN_SET="1" AND TOKEN_VALID="0"#]<span class="md-badge md-badge--warning">проверьте формат</span>[#endif#]</dd>
+                </div>
+                <div class="md-tlg-fact">
+                    <dt><i class="ti ti-route" aria-hidden="true"></i>Транспорт</dt>
+                    <dd>[#TRANSPORT_LABEL#]</dd>
+                </div>
+                <div class="md-tlg-fact">
+                    <dt><i class="ti ti-arrows-exchange" aria-hidden="true"></i>Получение обновлений</dt>
+                    <dd><span class="md-badge md-badge--[#MODE_BADGE#]">[#MODE_LABEL#]</span></dd>
+                </div>
+                <div class="md-tlg-fact">
+                    <dt><i class="ti ti-clock-play" aria-hidden="true"></i>Цикл</dt>
+                    <dd><span class="md-tlg-status md-tlg-status--[#CYCLE_STATE#]"><span class="md-status__dot" aria-hidden="true"></span>[#CYCLE_LABEL#]</span></dd>
+                </div>
+                <div class="md-tlg-fact">
+                    <dt><i class="ti ti-webhook" aria-hidden="true"></i>Webhook</dt>
+                    <dd>
+                        [#if WEBHOOK_MODE="1"#]
+                        <code class="md-tlg-code-inline" title="[#WEBHOOK_URL_VALUE#]">[#WEBHOOK_URL_VALUE#]</code>
+                        [#else#]
+                        <span class="md-tlg-muted">не используется</span>
+                        [#endif#]
+                    </dd>
+                </div>
+                <div class="md-tlg-fact">
+                    <dt><i class="ti ti-filter" aria-hidden="true"></i>Типы обновлений</dt>
+                    <dd>[#ALLOWED_UPDATES_COUNT#] из 23</dd>
+                </div>
+                <div class="md-tlg-fact">
+                    <dt><i class="ti ti-folder" aria-hidden="true"></i>Хранилище файлов</dt>
+                    <dd><code class="md-tlg-code-inline" title="[#STORAGE_EFFECTIVE#]">[#STORAGE_LABEL#]</code></dd>
+                </div>
+                <div class="md-tlg-fact">
+                    <dt><i class="ti ti-clock" aria-hidden="true"></i>Последняя проверка</dt>
+                    <dd>[#LAST_CHECK_HUMAN#]</dd>
+                </div>
+            </dl>
+
+            [#if LAST_ERROR!=""#]
+            <div class="md-alert md-alert--danger md-tlg-compact-alert" role="alert">
+                <i class="ti ti-alert-triangle md-alert__icon" aria-hidden="true"></i>
+                <div class="md-alert__body">
+                    <div class="md-alert__text"><strong>Последняя ошибка:</strong> [#LAST_ERROR#]</div>
+                    <div class="md-alert__text md-tlg-muted">[#LAST_ERROR_HUMAN#]</div>
+                </div>
+            </div>
+            [#endif#]
+        </div>
+    </section>
+
+    <section class="md-card md-tlg-quick" aria-labelledby="mdTlgQuickTitle">
+        <header class="md-card__head">
+            <div class="md-card__titles">
+                <div class="md-card__eyebrow">Действия</div>
+                <h2 class="md-card__title" id="mdTlgQuickTitle"><i class="ti ti-bolt" aria-hidden="true"></i>Быстрый старт</h2>
+                <p class="md-card__subtitle">Проверить доставку, обновить меню команд или перейти к настройке.</p>
+            </div>
+        </header>
+        <div class="md-card__body">
+            <div class="md-tlg-actions-grid">
+                <button type="button" class="md-tlg-action" data-md-tlg-open-send-test>
+                    <span class="md-tlg-action__icon"><i class="ti ti-send" aria-hidden="true"></i></span>
+                    <span class="md-tlg-action__text"><strong>Тестовое сообщение</strong><small>Проверить доставку в выбранный чат</small></span>
+                </button>
+                <a class="md-tlg-action" href="<#ROOTHTML#>panel/telegram.html?view_mode=settings">
+                    <span class="md-tlg-action__icon"><i class="ti ti-settings" aria-hidden="true"></i></span>
+                    <span class="md-tlg-action__text"><strong>Настройки</strong><small>Прокси, webhook, хранение</small></span>
+                </a>
+                <a class="md-tlg-action" href="<#ROOTHTML#>panel/telegram.html?view_mode=sync_commands" data-md-confirm="Отправить список команд в меню Telegram?">
+                    <span class="md-tlg-action__icon"><i class="ti ti-list-check" aria-hidden="true"></i></span>
+                    <span class="md-tlg-action__text"><strong>Меню команд</strong><small>Синхронизировать с Telegram</small></span>
+                </a>
+                <a class="md-tlg-action" href="<#ROOTHTML#>panel/telegram.html?tab=users">
+                    <span class="md-tlg-action__icon"><i class="ti ti-user-plus" aria-hidden="true"></i></span>
+                    <span class="md-tlg-action__text"><strong>Пользователи</strong><small>Доступы и привязка к системе</small></span>
+                </a>
+                <a class="md-tlg-action" href="<#ROOTHTML#>panel/telegram.html?tab=help">
+                    <span class="md-tlg-action__icon"><i class="ti ti-help-circle" aria-hidden="true"></i></span>
+                    <span class="md-tlg-action__text"><strong>Справка</strong><small>Примеры команд и событий</small></span>
+                </a>
+                [#if BOT_LINK!=""#]
+                <a class="md-tlg-action" href="[#BOT_LINK#]" target="_blank" rel="noopener">
+                    <span class="md-tlg-action__icon"><i class="ti ti-brand-telegram" aria-hidden="true"></i></span>
+                    <span class="md-tlg-action__text"><strong>Открыть чат</strong><small>[#BOT_SUBTITLE#]</small></span>
+                </a>
+                [#endif#]
+            </div>
+        </div>
+    </section>
+</div>
+
+[#if SETUP_COMPLETE="0"#]
+<section class="md-card md-tlg-setup" aria-labelledby="mdTlgSetupTitle">
+    <header class="md-card__head">
+        <div class="md-card__titles">
+            <div class="md-card__eyebrow">Чек-лист</div>
+            <h2 class="md-card__title" id="mdTlgSetupTitle"><i class="ti ti-list-check" aria-hidden="true"></i>Что осталось настроить</h2>
+            <p class="md-card__subtitle">[#SETUP_DONE_COUNT#] из [#SETUP_TOTAL#] шагов выполнено.</p>
+        </div>
+    </header>
+    <div class="md-card__body">
+        <div class="md-tlg-setup__list">
+            <div class="md-tlg-setup__item [#if SETUP_TOKEN="1"#]is-done[#endif#]">
+                <span class="md-tlg-setup__mark"><i class="ti ti-[#if SETUP_TOKEN="1"#]check[#else#]key[#endif#]" aria-hidden="true"></i></span>
+                <div><strong>Токен бота</strong><small>[#if SETUP_TOKEN="1"#]Токен сохранён[#else#]Вставьте токен от @BotFather[#endif#]</small></div>
+                [#if SETUP_TOKEN="0"#]<a href="<#ROOTHTML#>panel/telegram.html?view_mode=settings" class="md-btn md-btn--secondary md-btn--sm">Открыть</a>[#endif#]
+            </div>
+            <div class="md-tlg-setup__item [#if SETUP_BOT="1"#]is-done[#endif#]">
+                <span class="md-tlg-setup__mark"><i class="ti ti-[#if SETUP_BOT="1"#]check[#else#]plug[#endif#]" aria-hidden="true"></i></span>
+                <div><strong>Проверка связи</strong><small>[#if SETUP_BOT="1"#]Бот отвечает[#else#]Нажмите «Проверить связь»[#endif#]</small></div>
+                [#if SETUP_BOT="0"#]<button type="button" class="md-btn md-btn--secondary md-btn--sm" data-md-tlg-check>Проверить</button>[#endif#]
+            </div>
+            <div class="md-tlg-setup__item [#if SETUP_USERS="1"#]is-done[#endif#]">
+                <span class="md-tlg-setup__mark"><i class="ti ti-[#if SETUP_USERS="1"#]check[#else#]users[#endif#]" aria-hidden="true"></i></span>
+                <div><strong>Пользователи</strong><small>[#if SETUP_USERS="1"#]Добавлены получатели[#else#]Добавьте себя или отправьте боту /start[#endif#]</small></div>
+                [#if SETUP_USERS="0"#]<a href="<#ROOTHTML#>panel/telegram.html?tab=users" class="md-btn md-btn--secondary md-btn--sm">Перейти</a>[#endif#]
+            </div>
+            <div class="md-tlg-setup__item [#if SETUP_COMMANDS="1"#]is-done[#endif#]">
+                <span class="md-tlg-setup__mark"><i class="ti ti-[#if SETUP_COMMANDS="1"#]check[#else#]terminal-2[#endif#]" aria-hidden="true"></i></span>
+                <div><strong>Команды</strong><small>[#if SETUP_COMMANDS="1"#]Команды созданы[#else#]Добавьте первую команду, например Ping[#endif#]</small></div>
+                [#if SETUP_COMMANDS="0"#]<a href="<#ROOTHTML#>panel/telegram.html?tab=commands" class="md-btn md-btn--secondary md-btn--sm">Перейти</a>[#endif#]
+            </div>
+            <div class="md-tlg-setup__item [#if SETUP_CHANNEL="1"#]is-done[#endif#]">
+                <span class="md-tlg-setup__mark"><i class="ti ti-[#if SETUP_CHANNEL="1"#]check[#else#]activity[#endif#]" aria-hidden="true"></i></span>
+                <div><strong>Приём сообщений</strong><small>[#if SETUP_CHANNEL="1"#]Цикл запущен или webhook активен[#else#]Запустите цикл telegram или включите webhook[#endif#]</small></div>
+                [#if SETUP_CHANNEL="0"#]<a href="<#ROOTHTML#>panel/telegram.html?view_mode=settings" class="md-btn md-btn--secondary md-btn--sm">Настроить</a>[#endif#]
+            </div>
+        </div>
+    </div>
+</section>
+[#endif#]
+
+<div class="md-tlg-overview-columns">
+    <section class="md-card" aria-labelledby="mdTlgRecentTitle">
+        <header class="md-card__head">
+            <div class="md-card__titles">
+                <div class="md-card__eyebrow">Активность</div>
+                <h2 class="md-card__title" id="mdTlgRecentTitle"><i class="ti ti-history" aria-hidden="true"></i>Последние сообщения</h2>
+                <p class="md-card__subtitle">Входящие, отправленные и ошибки доставки.</p>
+            </div>
+            <div class="md-card__actions">
+                <a href="<#ROOTHTML#>panel/telegram.html?tab=history" class="md-btn md-btn--secondary md-btn--sm">Вся история</a>
+            </div>
+        </header>
+        <div class="md-card__body md-card__body--flush">
+            [#if HAS_RECENT="1"#]
+            <div class="md-table__scroll">
+                <table class="md-table md-tlg-mini-table">
+                    <thead><tr><th>Время</th><th>Направление</th><th>Пользователь</th><th>Сообщение</th></tr></thead>
+                    <tbody>
+                        [#begin RECENT#]
+                        <tr>
+                            <td><span title="[#CREATED_EXACT#]">[#CREATED_HUMAN#]</span></td>
+                            <td><span class="md-badge md-badge--[#DIRECTION_TONE#]"><i class="ti ti-[#DIRECTION_ICON#]" aria-hidden="true"></i>[#DIRECTION_LABEL#]</span></td>
+                            <td><span class="md-tlg-user-cell"><span class="md-tlg-user-cell__name">[#USER_NAME#]</span><span class="md-tlg-user-cell__id">[#USER_ID#]</span></span></td>
+                            <td><span class="md-tlg-message-preview">[#MESSAGE#]</span></td>
+                        </tr>
+                        [#end RECENT#]
+                    </tbody>
+                </table>
+            </div>
+            [#else#]
+            <div class="md-empty md-empty--compact">
+                <span class="md-empty__icon"><i class="ti ti-message-off" aria-hidden="true"></i></span>
+                <div class="md-empty__title">Сообщений пока нет</div>
+                <p class="md-empty__text">История заполнится, когда пользователь напишет боту или сценарий отправит уведомление.</p>
+            </div>
+            [#endif#]
+        </div>
+    </section>
+
+    <div class="md-tlg-overview-side">
+        <section class="md-card" aria-labelledby="mdTlgTopCommandsTitle">
+            <header class="md-card__head">
+                <div class="md-card__titles">
+                    <div class="md-card__eyebrow">Команды</div>
+                    <h2 class="md-card__title" id="mdTlgTopCommandsTitle">Чаще всего</h2>
+                </div>
+                <div class="md-card__actions"><a href="<#ROOTHTML#>panel/telegram.html?tab=commands" class="md-btn md-btn--ghost md-btn--sm">Все</a></div>
+            </header>
+            <div class="md-card__body">
+                [#if HAS_TOP_COMMANDS="1"#]
+                <div class="md-tlg-rank">
+                    [#begin TOP_COMMANDS#]
+                    <a class="md-tlg-rank__row" href="[#URL#]">
+                        <span class="md-tlg-rank__title">/[#TITLE#]</span>
+                        <span class="md-tlg-rank__meta">[#LAST_RUN_HUMAN#]</span>
+                        <span class="md-tlg-rank__value">[#RUNS#]</span>
+                    </a>
+                    [#end TOP_COMMANDS#]
+                </div>
+                [#else#]
+                <p class="md-tlg-muted">Команд пока нет. <a href="<#ROOTHTML#>panel/telegram.html?tab=commands">Добавить</a></p>
+                [#endif#]
+            </div>
+        </section>
+
+        <section class="md-card" aria-labelledby="mdTlgActiveEventsTitle">
+            <header class="md-card__head">
+                <div class="md-card__titles">
+                    <div class="md-card__eyebrow">События</div>
+                    <h2 class="md-card__title" id="mdTlgActiveEventsTitle">Включены</h2>
+                </div>
+                <div class="md-card__actions"><a href="<#ROOTHTML#>panel/telegram.html?tab=events" class="md-btn md-btn--ghost md-btn--sm">Все</a></div>
+            </header>
+            <div class="md-card__body">
+                [#if HAS_ACTIVE_EVENTS="1"#]
+                <div class="md-tlg-event-list">
+                    [#begin ACTIVE_EVENTS#]
+                    <a class="md-tlg-event-row" href="[#URL#]">
+                        <span class="md-tlg-event-row__icon md-tlg-tone--[#TYPE_TONE#]"><i class="ti ti-[#TYPE_ICON#]" aria-hidden="true"></i></span>
+                        <span class="md-tlg-event-row__body"><strong>[#TITLE#]</strong><small>[#TYPE_LABEL#] · [#LAST_RUN_HUMAN#]</small></span>
+                        <span class="md-tlg-event-row__count">[#RUNS#]</span>
+                    </a>
+                    [#end ACTIVE_EVENTS#]
+                </div>
+                [#else#]
+                <p class="md-tlg-muted">Нет включённых событий. <a href="<#ROOTHTML#>panel/telegram.html?tab=events">Настроить</a></p>
+                [#endif#]
+            </div>
+        </section>
+
+        [#if HAS_RECENT_ERRORS="1"#]
+        <section class="md-card md-tlg-errors" aria-labelledby="mdTlgRecentErrorsTitle">
+            <header class="md-card__head">
+                <div class="md-card__titles">
+                    <div class="md-card__eyebrow">Ошибки</div>
+                    <h2 class="md-card__title" id="mdTlgRecentErrorsTitle">Последние сбои</h2>
+                </div>
+                <div class="md-card__actions"><a href="<#ROOTHTML#>panel/telegram.html?tab=history&amp;direction=2" class="md-btn md-btn--ghost md-btn--sm">Все</a></div>
+            </header>
+            <div class="md-card__body">
+                <div class="md-tlg-error-list">
+                    [#begin RECENT_ERRORS#]
+                    <div class="md-tlg-error-row">
+                        <i class="ti ti-alert-circle" aria-hidden="true"></i>
+                        <span><strong>[#MESSAGE#]</strong><small title="[#CREATED_EXACT#]">[#CREATED_HUMAN#]</small></span>
+                    </div>
+                    [#end RECENT_ERRORS#]
+                </div>
+            </div>
+        </section>
+        [#endif#]
+    </div>
+</div>
+
+<div class="modal fade md-modal" id="mdTlgSendTestModal" tabindex="-1" aria-labelledby="mdTlgSendTestTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="mdTlgSendTestTitle">Тестовое сообщение</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+            </div>
+            <div class="modal-body">
+                <div class="md-field">
+                    <label class="md-field__label" for="mdTlgTestChat">Chat ID</label>
+                    <div class="md-field__control">
+                        <input type="text" class="md-input" id="mdTlgTestChat" value="[#TEST_CHAT_ID#]" placeholder="-100123456789 или 123456789" inputmode="numeric">
+                    </div>
+                    <div class="md-field__hint">[#if HAS_TEST_USER="1"#]Подставлен чат: [#TEST_CHAT_NAME#]. [#endif#]Для личного чата бот должен быть уже запущен пользователем.</div>
+                </div>
+                <div class="md-field">
+                    <label class="md-field__label" for="mdTlgTestText">Текст</label>
+                    <div class="md-field__control">
+                        <textarea class="md-input" id="mdTlgTestText" rows="3">Проверка связи из MajorDoMo. Бот на связи.</textarea>
+                    </div>
+                    <div class="md-field__hint">Поддерживается HTML: &lt;b&gt;жирный&lt;/b&gt;, &lt;i&gt;курсив&lt;/i&gt;, ссылки.</div>
+                </div>
+                <div class="md-tlg-inline-result" data-md-tlg-send-result aria-live="polite"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="md-btn md-btn--ghost" data-bs-dismiss="modal">Отмена</button>
+                <button type="button" class="md-btn md-btn--primary" data-md-tlg-send-test>
+                    <i class="ti ti-send" aria-hidden="true"></i><span class="md-btn__label">Отправить</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+

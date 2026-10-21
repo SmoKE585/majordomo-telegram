@@ -1,0 +1,143 @@
+<!--#
+ Telegram users list.
+#-->
+<section class="md-card md-tlg-table-card" aria-labelledby="mdTlgUsersTitle">
+    <header class="md-card__head">
+        <div class="md-card__titles">
+            <div class="md-card__eyebrow">Доступы</div>
+            <h2 class="md-card__title" id="mdTlgUsersTitle"><i class="ti ti-users" aria-hidden="true"></i>Пользователи бота</h2>
+            <p class="md-card__subtitle">Кто может писать боту, получать уведомления и управлять домом. Всего: <strong>[#USERS_TOTAL#]</strong>.</p>
+        </div>
+        <div class="md-card__actions">
+            <a href="<#ROOTHTML#>panel/telegram.html?view_mode=refresh_users" class="md-btn md-btn--ghost md-btn--sm" data-md-confirm="Обновить имена и аватары всех пользователей через Telegram?">
+                <i class="ti ti-refresh" aria-hidden="true"></i><span class="md-btn__label">Обновить профили</span>
+            </a>
+            <a href="<#ROOTHTML#>panel/telegram.html?view_mode=edit_user" class="md-btn md-btn--primary md-btn--sm">
+                <i class="ti ti-user-plus" aria-hidden="true"></i><span class="md-btn__label">Добавить</span>
+            </a>
+        </div>
+    </header>
+
+    <form action="<#ROOTHTML#>panel/telegram.html" method="get" class="md-tlg-filterbar" name="frmUsersFilter">
+        <input type="hidden" name="tab" value="users">
+        <label class="md-tlg-filterbar__search">
+            <i class="ti ti-search" aria-hidden="true"></i>
+            <input type="search" name="q" value="[#FILTER_Q#]" placeholder="Имя, @username или chat_id" aria-label="Поиск пользователей" autocomplete="off">
+        </label>
+        <select name="access" class="md-select" aria-label="Фильтр по доступам">
+            <option value="" [#if FILTER_ACCESS=""#]selected[#endif#]>Все доступы</option>
+            <option value="admin" [#if FILTER_ACCESS="admin"#]selected[#endif#]>Администраторы</option>
+            <option value="cmd" [#if FILTER_ACCESS="cmd"#]selected[#endif#]>С командами</option>
+            <option value="history" [#if FILTER_ACCESS="history"#]selected[#endif#]>С историей</option>
+            <option value="none" [#if FILTER_ACCESS="none"#]selected[#endif#]>Без доступа</option>
+        </select>
+        <select name="sort" class="md-select" aria-label="Сортировка">
+            <option value="seen" [#if FILTER_SORT="seen"#]selected[#endif#]>По активности</option>
+            <option value="name" [#if FILTER_SORT="name"#]selected[#endif#]>По имени</option>
+            <option value="chat" [#if FILTER_SORT="chat"#]selected[#endif#]>По chat_id</option>
+            <option value="created" [#if FILTER_SORT="created"#]selected[#endif#]>По дате добавления</option>
+        </select>
+        <button type="submit" class="md-btn md-btn--secondary md-btn--sm"><i class="ti ti-filter" aria-hidden="true"></i>Применить</button>
+        [#if HAS_FILTERS="1"#]<a href="[#RESET_URL#]" class="md-btn md-btn--ghost md-btn--sm">Сбросить</a>[#endif#]
+    </form>
+
+    [#if HAS_ROWS="1"#]
+    <div class="md-table__scroll">
+        <table class="md-table md-tlg-users-table">
+            <thead>
+                <tr>
+                    <th scope="col">Пользователь</th>
+                    <th scope="col">Доступы</th>
+                    <th scope="col">Привязка</th>
+                    <th scope="col">Активность</th>
+                    <th scope="col" class="text-end"><span class="md-visually-hidden">Действия</span></th>
+                </tr>
+            </thead>
+            <tbody>
+                [#begin USERS#]
+                <tr>
+                    <td>
+                        <div class="md-tlg-user">
+                            [#if AVATAR!=""#]
+                            <span class="md-tlg-avatar"><img src="[#AVATAR#]" alt="" width="40" height="40" loading="lazy"></span>
+                            [#else#]
+                            <span class="md-tlg-avatar md-tlg-avatar--initials[#if IS_GROUP="1"#] md-tlg-avatar--group[#endif#]">[#if IS_GROUP="1"#]<i class="ti ti-users-group" aria-hidden="true"></i>[#else#][#INITIALS#][#endif#]</span>
+                            [#endif#]
+                            <span class="md-tlg-user__text">
+                                <a href="[#EDIT_URL#]" class="md-tlg-user__name">[#NAME#]</a>
+                                <span class="md-tlg-user__sub">
+                                    [#if HAS_USERNAME="1"#][#USERNAME#] · [#endif#]<code>[#CHAT_ID#]</code>
+                                </span>
+                            </span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="md-tlg-chips">
+                            [#begin PERMISSIONS#]
+                            <span class="md-badge md-badge--[#TONE#]"><i class="ti ti-[#ICON#]" aria-hidden="true"></i>[#LABEL#]</span>
+                            [#end PERMISSIONS#]
+                        </div>
+                    </td>
+                    <td>
+                        [#if HAS_MEMBER="1"#]<span class="md-tlg-member"><i class="ti ti-user-check" aria-hidden="true"></i>[#MEMBER_NAME#]</span>[#else#]<span class="md-tlg-muted">не привязан</span>[#endif#]
+                    </td>
+                    <td>
+                        <span class="md-tlg-time" title="[#LAST_SEEN_EXACT#]">[#LAST_SEEN_HUMAN#]</span>
+                        <span class="md-tlg-time-sub">добавлен [#CREATED_HUMAN#]</span>
+                    </td>
+                    <td class="text-end">
+                        <div class="md-table__actions">
+                            <button type="button" class="md-icon-btn md-icon-btn--sm" data-md-tlg-send data-chat-id="[#CHAT_ID#]" data-name="[#NAME#]" data-bs-toggle="tooltip" data-bs-title="Отправить тестовое сообщение" aria-label="Отправить сообщение [#NAME#]">
+                                <i class="ti ti-send" aria-hidden="true"></i>
+                            </button>
+                            <a href="[#EDIT_URL#]" class="md-icon-btn md-icon-btn--sm" data-bs-toggle="tooltip" data-bs-title="Редактировать" aria-label="Редактировать [#NAME#]">
+                                <i class="ti ti-pencil" aria-hidden="true"></i>
+                            </a>
+                            <a href="[#DELETE_URL#]" class="md-icon-btn md-icon-btn--sm md-icon-btn--danger" data-bs-toggle="tooltip" data-bs-title="Удалить" aria-label="Удалить [#NAME#]" data-md-confirm="Удалить пользователя [#NAME#] ([#CHAT_ID#])?">
+                                <i class="ti ti-trash" aria-hidden="true"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                [#end USERS#]
+            </tbody>
+        </table>
+    </div>
+    <div class="md-table__footer">
+        <span>Показано [#SHOW_FROM#]–[#SHOW_TO#] из [#TOTAL#]</span>
+        [#if HAS_PAGES="1"#]
+        <ul class="pagination md-pagination mb-0">
+            <li class="page-item [#if PAGE_PREV=""#]disabled[#endif#]">
+                [#if PAGE_PREV!=""#]<a class="page-link" href="[#PAGE_PREV#]" aria-label="Назад"><i class="ti ti-chevron-left" aria-hidden="true"></i></a>[#else#]<span class="page-link"><i class="ti ti-chevron-left" aria-hidden="true"></i></span>[#endif#]
+            </li>
+            [#begin PAGE_ITEMS#]
+            [#if ELLIPSIS="1"#]
+            <li class="page-item disabled"><span class="page-link">…</span></li>
+            [#else#]
+            <li class="page-item [#if SELECTED="1"#]active[#endif#]"><a class="page-link" href="[#URL#]">[#NUM#]</a></li>
+            [#endif#]
+            [#end PAGE_ITEMS#]
+            <li class="page-item [#if PAGE_NEXT=""#]disabled[#endif#]">
+                [#if PAGE_NEXT!=""#]<a class="page-link" href="[#PAGE_NEXT#]" aria-label="Вперёд"><i class="ti ti-chevron-right" aria-hidden="true"></i></a>[#else#]<span class="page-link"><i class="ti ti-chevron-right" aria-hidden="true"></i></span>[#endif#]
+            </li>
+        </ul>
+        [#endif#]
+    </div>
+    [#else#]
+    <div class="md-card__body">
+        <div class="md-empty">
+            <span class="md-empty__icon"><i class="ti ti-users-minus" aria-hidden="true"></i></span>
+            <div class="md-empty__title">[#if HAS_FILTERS="1"#]Ничего не найдено[#else#]Пользователей пока нет[#endif#]</div>
+            <p class="md-empty__text">[#if HAS_FILTERS="1"#]Измените запрос или сбросьте фильтры.[#else#]Попросите пользователя отправить боту /start, если включена регистрация, или добавьте chat_id вручную.[#endif#]</p>
+            <div class="md-empty__actions">
+                [#if HAS_FILTERS="1"#]
+                <a href="[#RESET_URL#]" class="md-btn md-btn--secondary md-btn--sm">Сбросить фильтры</a>
+                [#else#]
+                <a href="<#ROOTHTML#>panel/telegram.html?view_mode=edit_user" class="md-btn md-btn--primary md-btn--sm"><i class="ti ti-plus" aria-hidden="true"></i>Добавить пользователя</a>
+                [#endif#]
+            </div>
+        </div>
+    </div>
+    [#endif#]
+</section>
+

@@ -1,0 +1,191 @@
+<!--#
+ Telegram event card.
+#-->
+<div class="md-ui-page md-ui-page--stack md-tlg-page md-tlg-edit">
+    <header class="md-ui-hero">
+        <div>
+            <div class="md-ui-hero__eyebrow"><i class="ti ti-bolt" aria-hidden="true"></i>Событие Telegram</div>
+            <h1 class="md-ui-hero__title">[#TITLE_HEADING#]</h1>
+            <div class="md-ui-hero__meta">
+                <span class="md-ui-hero__meta-item"><i class="ti ti-[#TYPE_ICON#]" aria-hidden="true"></i>Тип: <strong>[#TYPE_LABEL#]</strong></span>
+                <span class="md-ui-hero__meta-item"><i class="ti ti-player-play" aria-hidden="true"></i>Запусков: <strong>[#RUNS#]</strong></span>
+                <span class="md-ui-hero__meta-item"><i class="ti ti-clock" aria-hidden="true"></i>Последний: <strong>[#LAST_RUN_HUMAN#]</strong></span>
+            </div>
+        </div>
+        <div class="md-ui-hero__actions">
+            <a href="<#ROOTHTML#>panel/telegram.html?tab=events" class="md-btn md-btn--secondary">
+                <i class="ti ti-arrow-left" aria-hidden="true"></i><span class="md-btn__label">К событиям</span>
+            </a>
+            [#if EXPORT_URL!=""#]
+            <a href="[#EXPORT_URL#]" class="md-btn md-btn--ghost">
+                <i class="ti ti-download" aria-hidden="true"></i><span class="md-btn__label">Экспорт</span>
+            </a>
+            <a href="<#ROOTHTML#>panel/telegram.html?view_mode=delete_event&amp;id=[#ID#]" class="md-btn md-btn--danger" data-md-confirm="Удалить событие [#TITLE#]?">
+                <i class="ti ti-trash" aria-hidden="true"></i><span class="md-btn__label">Удалить</span>
+            </a>
+            [#endif#]
+        </div>
+    </header>
+
+    [#if SAVE_ERRORS#]
+    <div class="md-alert md-alert--danger" role="alert">
+        <i class="ti ti-alert-octagon md-alert__icon" aria-hidden="true"></i>
+        <div class="md-alert__body">
+            <div class="md-alert__title">Событие не сохранено</div>
+            <ul class="md-tlg-error-list">
+                [#begin SAVE_ERRORS#]
+                <li>[#VALUE#]</li>
+                [#end SAVE_ERRORS#]
+            </ul>
+        </div>
+    </div>
+    [#endif#]
+
+    <form action="<#ROOTHTML#>panel/telegram.html" method="post" name="frmEvent" class="md-tlg-edit-form">
+        <div class="md-ui-form-stack">
+            <section class="md-card" aria-labelledby="mdTlgEventMain">
+                <header class="md-card__head">
+                    <div class="md-card__titles">
+                        <div class="md-card__eyebrow">Триггер</div>
+                        <h2 class="md-card__title" id="mdTlgEventMain"><i class="ti ti-bolt" aria-hidden="true"></i>Когда срабатывает</h2>
+                        <p class="md-card__subtitle">Один тип обновления — один или несколько обработчиков.</p>
+                    </div>
+                    <div class="md-card__actions">
+                        <label class="md-check" for="mdTlgEventEnable">
+                            <input class="md-check__input" id="mdTlgEventEnable" type="checkbox" name="enable" value="1" data-md-raw-checkbox[#if ENABLE="1"#] checked[#endif#]>
+                            <span class="md-check__box" aria-hidden="true"><i class="ti ti-check"></i></span>
+                            <span class="md-check__text"><span class="md-check__label">Включено</span></span>
+                        </label>
+                    </div>
+                </header>
+                <div class="md-card__body">
+                    <div class="md-ui-form-stack">
+                        <div class="md-ui-form-grid">
+                            <div class="md-field">
+                                <label class="md-field__label" for="mdTlgEventTitle">Название<span class="md-field__req" aria-hidden="true">*</span></label>
+                                <div class="md-field__control">
+                                    <input type="text" class="md-input" id="mdTlgEventTitle" name="title" value="[#TITLE#]" placeholder="Фото из чата" required>
+                                </div>
+                                <div class="md-field__hint">Понятное имя, чтобы потом найти обработчик в списке.</div>
+                            </div>
+                            <div class="md-field">
+                                <label class="md-field__label" for="mdTlgEventType">Тип события</label>
+                                <div class="md-field__control">
+                                    <select class="md-select" id="mdTlgEventType" name="type_event" data-md-tlg-event-type>
+                                        [#begin TYPE_OPTIONS#]
+                                        <option value="[#VALUE#]" [#if SELECTED="1"#]selected[#endif#]>[#LABEL#]</option>
+                                        [#end TYPE_OPTIONS#]
+                                    </select>
+                                </div>
+                                <div class="md-field__hint">От типа зависит набор переменных в обработчике.</div>
+                            </div>
+                        </div>
+
+                        <div class="md-field">
+                            <label class="md-field__label" for="mdTlgEventDescription">Описание</label>
+                            <div class="md-field__control">
+                                <input type="text" class="md-input" id="mdTlgEventDescription" name="description" value="[#DESCRIPTION#]" placeholder="Что делает обработчик">
+                            </div>
+                        </div>
+
+                        <div class="md-tlg-type-card" data-md-tlg-event-meta>
+                            <div class="md-tlg-type-card__icon md-tlg-tone--[#TYPE_TONE#]"><i class="ti ti-[#TYPE_ICON#]" aria-hidden="true"></i></div>
+                            <div class="md-tlg-type-card__body">
+                                <strong data-md-tlg-event-type-label>[#TYPE_LABEL#]</strong>
+                                <p data-md-tlg-event-type-description>[#TYPE_DESCRIPTION#]</p>
+                                <div class="md-tlg-type-card__vars">Переменные: <code data-md-tlg-event-type-vars>[#TYPE_VARS#]</code></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="md-card md-tlg-code-card" aria-labelledby="mdTlgEventCode">
+                <header class="md-card__head">
+                    <div class="md-card__titles">
+                        <div class="md-card__eyebrow">Обработчик</div>
+                        <h2 class="md-card__title" id="mdTlgEventCode"><i class="ti ti-code" aria-hidden="true"></i>PHP-код</h2>
+                        <p class="md-card__subtitle">Доступны <code>$chat_id</code>, <code>$user</code>, <code>$message</code>, <code>$telegram_module</code> и переменные выбранного типа. Установите <code>$skip = true;</code>, чтобы остановить следующие обработчики.</p>
+                    </div>
+                    <div class="md-card__actions">
+                        <button type="button" class="md-btn md-btn--ghost md-btn--sm" data-md-tlg-insert-event-example data-md-tlg-code-target="mdTlgEventEditor">
+                            <i class="ti ti-sparkles" aria-hidden="true"></i><span class="md-btn__label">Вставить пример</span>
+                        </button>
+                        <button type="button" class="md-btn md-btn--secondary md-btn--sm" data-md-tlg-validate-code data-md-tlg-code-target="mdTlgEventEditor">
+                            <i class="ti ti-check" aria-hidden="true"></i><span class="md-btn__label">Проверить</span>
+                        </button>
+                    </div>
+                </header>
+                <div class="md-card__body">
+                    [#if SETTINGS_CODEEDITOR_TURNONSETTINGS != 1#]
+                    <div class="md-alert md-alert--warning" role="status">
+                        <i class="ti ti-alert-triangle md-alert__icon" aria-hidden="true"></i>
+                        <div class="md-alert__body"><div class="md-alert__text"><#LANG_CODEEDITOR_NOTY_TURNOFF#></div></div>
+                    </div>
+                    [#endif#]
+
+                    <div class="md-code-editor md-tlg-code-editor"
+                         data-code-editor
+                         data-code-editor-key="[#CODE_EDITOR_KEY#]"
+                         data-code-editor-mode="php"
+                         data-code-editor-theme="[#SETTINGS_CODEEDITOR_THEME#]"
+                         data-code-editor-autosave="0"
+                         data-code-editor-autoclose="[#SETTINGS_CODEEDITOR_AUTOCLOSEQUOTES#]"
+                         data-code-editor-wraplines="[#SETTINGS_CODEEDITOR_WRAPLINES#]"
+                         data-code-editor-min-lines="[#SETTINGS_CODEEDITOR_MIXLINE#]"
+                         data-code-editor-max-lines="[#SETTINGS_CODEEDITOR_SHOWLINE#]"
+                         data-code-editor-autofocus="0"
+                         data-code-editor-hide-errors-on-edit="1"
+                         data-code-editor-id="[#ID#]">
+                        <div class="md-code-editor__toolbar" data-code-editor-toolbar>
+                            <span class="md-code-editor__lang-badge">PHP</span>
+                            <span class="md-code-editor__toolbar-divider" aria-hidden="true"></span>
+                            <span class="md-code-editor__toolbar-spacer"></span>
+                            <span class="md-code-editor__status" data-code-editor-status aria-live="polite"></span>
+                            <button type="button" class="md-code-editor__icon-btn" data-code-editor-action="search" title="Найти (Ctrl+F)" aria-label="Найти">
+                                <i class="ti ti-search" aria-hidden="true"></i>
+                            </button>
+                            <button type="button" class="md-code-editor__icon-btn" data-code-editor-action="fullscreen" title="Полный экран (F11)" aria-label="Полный экран">
+                                <i class="ti ti-maximize" aria-hidden="true"></i>
+                            </button>
+                        </div>
+
+                        [#if ERR_CODE="1"#]
+                        <div class="md-code-editor__error" data-code-editor-error data-code-editor-old-code-b64="[#ERR_OLD_CODE_B64#]">
+                            <b>Ошибка в коде →</b> [#ERR_MESSAGE#]
+                            [#if ERR_LINE!="0"#]<div>Строка: [#ERR_LINE#]</div>[#endif#]
+                            <div class="md-code-editor__error-actions">
+                                <button type="button" class="md-btn md-btn--danger md-btn--sm" data-code-editor-action="restore-error">Восстановить предыдущий код</button>
+                            </div>
+                        </div>
+                        [#endif#]
+
+                        <textarea name="code" id="mdTlgEventEditor" rows="16" class="md-textarea" spellcheck="false">[#CODE#]</textarea>
+                    </div>
+
+                    <div class="md-tlg-example-preview" data-md-tlg-event-example>
+                        <div class="md-tlg-example-preview__head">
+                            <span><i class="ti ti-sparkles" aria-hidden="true"></i>Пример для выбранного типа</span>
+                            <button type="button" class="md-btn md-btn--ghost md-btn--sm" data-md-tlg-copy-target="mdTlgEventExampleCode"><i class="ti ti-copy" aria-hidden="true"></i>Копировать</button>
+                        </div>
+                        <pre class="md-tlg-pre" id="mdTlgEventExampleCode">[#TYPE_EXAMPLE#]</pre>
+                    </div>
+                    <div class="md-tlg-inline-result" data-md-tlg-code-result aria-live="polite"></div>
+                </div>
+            </section>
+        </div>
+
+        <div class="md-ui-form-actions">
+            <button type="submit" class="md-btn md-btn--primary">
+                <i class="ti ti-device-floppy" aria-hidden="true"></i><span class="md-btn__label">Сохранить событие</span>
+            </button>
+            <a href="<#ROOTHTML#>panel/telegram.html?tab=events" class="md-btn md-btn--secondary">Отмена</a>
+        </div>
+
+        <input type="hidden" name="view_mode" value="edit_event">
+        <input type="hidden" name="id" value="[#ID#]">
+        <input type="hidden" name="mode" value="update">
+        <input type="hidden" name="tab" value="events">
+    </form>
+</div>
+

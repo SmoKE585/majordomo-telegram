@@ -1,0 +1,177 @@
+<!--#
+ Telegram events list.
+#-->
+<section class="md-card md-tlg-table-card" aria-labelledby="mdTlgEventsTitle">
+    <header class="md-card__head">
+        <div class="md-card__titles">
+            <div class="md-card__eyebrow">Реакции</div>
+            <h2 class="md-card__title" id="mdTlgEventsTitle"><i class="ti ti-bolt" aria-hidden="true"></i>События</h2>
+            <p class="md-card__subtitle">Обработчики входящих обновлений: текст, файлы, геолокация, кнопки, реакции, участники чата. Включено: <strong>[#EVENTS_ENABLED#]</strong> из [#EVENTS_TOTAL#].</p>
+        </div>
+        <div class="md-card__actions">
+            <button type="button" class="md-btn md-btn--ghost md-btn--sm" data-bs-toggle="modal" data-bs-target="#mdTlgImportEventModal">
+                <i class="ti ti-file-import" aria-hidden="true"></i><span class="md-btn__label">Импорт</span>
+            </button>
+            <a href="<#ROOTHTML#>panel/telegram.html?view_mode=edit_event" class="md-btn md-btn--primary md-btn--sm">
+                <i class="ti ti-plus" aria-hidden="true"></i><span class="md-btn__label">Добавить событие</span>
+            </a>
+        </div>
+    </header>
+
+    <form action="<#ROOTHTML#>panel/telegram.html" method="get" class="md-tlg-filterbar" name="frmEventsFilter">
+        <input type="hidden" name="tab" value="events">
+        <label class="md-tlg-filterbar__search">
+            <i class="ti ti-search" aria-hidden="true"></i>
+            <input type="search" name="q" value="[#FILTER_Q#]" placeholder="Название, описание или код" aria-label="Поиск событий" autocomplete="off">
+        </label>
+        <select name="type" class="md-select" aria-label="Тип события">
+            <option value="" [#if FILTER_TYPE=""#]selected[#endif#]>Все типы</option>
+            [#begin TYPE_OPTIONS#]
+            <option value="[#VALUE#]" [#if SELECTED="1"#]selected[#endif#]>[#LABEL#]</option>
+            [#end TYPE_OPTIONS#]
+        </select>
+        <select name="enabled" class="md-select" aria-label="Фильтр по состоянию">
+            <option value="" [#if FILTER_ENABLED=""#]selected[#endif#]>Все состояния</option>
+            <option value="1" [#if FILTER_ENABLED="1"#]selected[#endif#]>Включены</option>
+            <option value="0" [#if FILTER_ENABLED="0"#]selected[#endif#]>Выключены</option>
+        </select>
+        <select name="sort" class="md-select" aria-label="Сортировка">
+            <option value="type" [#if FILTER_SORT="type"#]selected[#endif#]>По типу</option>
+            <option value="runs" [#if FILTER_SORT="runs"#]selected[#endif#]>По запускам</option>
+            <option value="last" [#if FILTER_SORT="last"#]selected[#endif#]>По последнему запуску</option>
+            <option value="title" [#if FILTER_SORT="title"#]selected[#endif#]>По названию</option>
+        </select>
+        <button type="submit" class="md-btn md-btn--secondary md-btn--sm"><i class="ti ti-filter" aria-hidden="true"></i>Применить</button>
+        [#if HAS_FILTERS="1"#]<a href="[#RESET_URL#]" class="md-btn md-btn--ghost md-btn--sm">Сбросить</a>[#endif#]
+    </form>
+
+    [#if HAS_ROWS="1"#]
+    <div class="md-table__scroll">
+        <table class="md-table md-tlg-events-table">
+            <thead>
+                <tr>
+                    <th scope="col">Событие</th>
+                    <th scope="col">Тип</th>
+                    <th scope="col">Состояние</th>
+                    <th scope="col">Запуски</th>
+                    <th scope="col" class="text-end"><span class="md-visually-hidden">Действия</span></th>
+                </tr>
+            </thead>
+            <tbody>
+                [#begin EVENTS#]
+                <tr>
+                    <td>
+                        <div class="md-tlg-command">
+                            <span class="md-tlg-event-icon md-tlg-tone--[#TYPE_TONE#]"><i class="ti ti-[#TYPE_ICON#]" aria-hidden="true"></i></span>
+                            <div class="md-tlg-command__body">
+                                <a href="[#EDIT_URL#]" class="md-tlg-command__title">[#TITLE#]</a>
+                                [#if DESCRIPTION!=""#]<span class="md-tlg-command__desc">[#DESCRIPTION#]</span>[#endif#]
+                                <span class="md-tlg-command__meta">
+                                    [#if HAS_CODE="1"#]<code class="md-tlg-code-inline" title="[#CODE_PREVIEW#]">[#CODE_PREVIEW#]</code>[#else#]<span class="md-badge md-badge--outline">код не задан</span>[#endif#]
+                                </span>
+                            </div>
+                        </div>
+                    </td>
+                    <td><span class="md-badge md-badge--[#TYPE_TONE#]"><i class="ti ti-[#TYPE_ICON#]" aria-hidden="true"></i>[#TYPE_SHORT#]</span></td>
+                    <td><span class="md-status md-status--[#STATE#]"><span class="md-status__dot" aria-hidden="true"></span><span class="md-status__label">[#STATE_LABEL#]</span></span></td>
+                    <td>
+                        <span class="md-tlg-runs">[#RUNS#]</span>
+                        <span class="md-tlg-time-sub">[#LAST_RUN_HUMAN#]</span>
+                    </td>
+                    <td class="text-end">
+                        <div class="md-table__actions">
+                            <a href="[#TOGGLE_URL#]" class="md-icon-btn md-icon-btn--sm" data-bs-toggle="tooltip" data-bs-title="[#if ENABLED="1"#]Выключить[#else#]Включить[#endif#]" aria-label="Переключить событие [#TITLE#]">
+                                <i class="ti ti-[#if ENABLED="1"#]toggle-right[#else#]toggle-left[#endif#]" aria-hidden="true"></i>
+                            </a>
+                            <a href="[#EDIT_URL#]" class="md-icon-btn md-icon-btn--sm" data-bs-toggle="tooltip" data-bs-title="Редактировать" aria-label="Редактировать событие [#TITLE#]">
+                                <i class="ti ti-pencil" aria-hidden="true"></i>
+                            </a>
+                            <a href="[#EXPORT_URL#]" class="md-icon-btn md-icon-btn--sm" data-bs-toggle="tooltip" data-bs-title="Экспорт JSON" aria-label="Экспорт события [#TITLE#]">
+                                <i class="ti ti-download" aria-hidden="true"></i>
+                            </a>
+                            <a href="[#DELETE_URL#]" class="md-icon-btn md-icon-btn--sm md-icon-btn--danger" data-bs-toggle="tooltip" data-bs-title="Удалить" aria-label="Удалить событие [#TITLE#]" data-md-confirm="Удалить событие [#TITLE#]?">
+                                <i class="ti ti-trash" aria-hidden="true"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                [#end EVENTS#]
+            </tbody>
+        </table>
+    </div>
+    <div class="md-table__footer">
+        <span>Показано [#SHOW_FROM#]–[#SHOW_TO#] из [#TOTAL#]</span>
+        [#if HAS_PAGES="1"#]
+        <ul class="pagination md-pagination mb-0">
+            <li class="page-item [#if PAGE_PREV=""#]disabled[#endif#]">
+                [#if PAGE_PREV!=""#]<a class="page-link" href="[#PAGE_PREV#]" aria-label="Назад"><i class="ti ti-chevron-left" aria-hidden="true"></i></a>[#else#]<span class="page-link"><i class="ti ti-chevron-left" aria-hidden="true"></i></span>[#endif#]
+            </li>
+            [#begin PAGE_ITEMS#]
+            [#if ELLIPSIS="1"#]
+            <li class="page-item disabled"><span class="page-link">…</span></li>
+            [#else#]
+            <li class="page-item [#if SELECTED="1"#]active[#endif#]"><a class="page-link" href="[#URL#]">[#NUM#]</a></li>
+            [#endif#]
+            [#end PAGE_ITEMS#]
+            <li class="page-item [#if PAGE_NEXT=""#]disabled[#endif#]">
+                [#if PAGE_NEXT!=""#]<a class="page-link" href="[#PAGE_NEXT#]" aria-label="Вперёд"><i class="ti ti-chevron-right" aria-hidden="true"></i></a>[#else#]<span class="page-link"><i class="ti ti-chevron-right" aria-hidden="true"></i></span>[#endif#]
+            </li>
+        </ul>
+        [#endif#]
+    </div>
+    [#else#]
+    <div class="md-card__body">
+        <div class="md-empty">
+            <span class="md-empty__icon"><i class="ti ti-bolt-off" aria-hidden="true"></i></span>
+            <div class="md-empty__title">[#if HAS_FILTERS="1"#]Ничего не найдено[#else#]Событий пока нет[#endif#]</div>
+            <p class="md-empty__text">[#if HAS_FILTERS="1"#]Измените фильтры или сбросьте их.[#else#]Например, включите реакцию на фото или на нажатие inline-кнопки. Примеры кода есть в редакторе события.[#endif#]</p>
+            <div class="md-empty__actions">
+                [#if HAS_FILTERS="1"#]
+                <a href="[#RESET_URL#]" class="md-btn md-btn--secondary md-btn--sm">Сбросить фильтры</a>
+                [#else#]
+                <a href="<#ROOTHTML#>panel/telegram.html?view_mode=edit_event" class="md-btn md-btn--primary md-btn--sm"><i class="ti ti-plus" aria-hidden="true"></i>Добавить событие</a>
+                [#endif#]
+            </div>
+        </div>
+    </div>
+    [#endif#]
+</section>
+
+<div class="modal fade md-modal" id="mdTlgImportEventModal" tabindex="-1" aria-labelledby="mdTlgImportEventTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <form class="modal-content" action="<#ROOTHTML#>panel/telegram.html?view_mode=import_event" method="post" enctype="multipart/form-data">
+            <div class="modal-header">
+                <h2 class="modal-title" id="mdTlgImportEventTitle">Импорт события</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+            </div>
+            <div class="modal-body">
+                <div class="md-field">
+                    <label class="md-field__label" for="mdTlgImportEventFile">JSON-файл</label>
+                    <div class="md-field__control">
+                        <input type="file" class="md-input" id="mdTlgImportEventFile" name="import_file" accept=".json,.txt,application/json">
+                    </div>
+                </div>
+                <div class="md-field">
+                    <label class="md-field__label" for="mdTlgImportEventJson">или вставьте JSON</label>
+                    <div class="md-field__control">
+                        <textarea class="md-input" id="mdTlgImportEventJson" name="import_json" rows="5" placeholder='{"TITLE":"Фото","TYPE_EVENT":2,"CODE":"say(&quot;photo&quot;);"}'></textarea>
+                    </div>
+                </div>
+                <label class="md-check" for="mdTlgImportEventOverwrite">
+                    <input class="md-check__input" id="mdTlgImportEventOverwrite" type="checkbox" name="overwrite" value="1" data-md-raw-checkbox>
+                    <span class="md-check__box" aria-hidden="true"><i class="ti ti-check"></i></span>
+                    <span class="md-check__text">
+                        <span class="md-check__label">Перезаписать совпадение</span>
+                        <span class="md-check__desc">Иначе будет создана копия с суффиксом _copy</span>
+                    </span>
+                </label>
+                <input type="hidden" name="tab" value="events">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="md-btn md-btn--ghost" data-bs-dismiss="modal">Отмена</button>
+                <button type="submit" class="md-btn md-btn--primary"><i class="ti ti-file-import" aria-hidden="true"></i>Импортировать</button>
+            </div>
+        </form>
+    </div>
+</div>
+

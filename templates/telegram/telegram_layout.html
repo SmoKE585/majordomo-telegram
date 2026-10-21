@@ -1,0 +1,119 @@
+<!--#
+ Shared Telegram shell: hero, section tabs and alerts.
+#-->
+<div class="md-ui-page md-ui-page--stack md-tlg-page">
+    <header class="md-ui-hero md-tlg-hero">
+        <div class="md-tlg-hero__main">
+            [#if BOT_AVATAR!=""#]
+            <span class="md-tlg-bot-avatar"><img src="[#BOT_AVATAR#]" alt="" width="72" height="72"></span>
+            [#else#]
+            <span class="md-tlg-bot-avatar md-tlg-bot-avatar--empty"><i class="ti ti-brand-telegram" aria-hidden="true"></i></span>
+            [#endif#]
+            <div class="md-tlg-hero__text">
+                <div class="md-ui-hero__eyebrow"><i class="ti ti-brand-telegram" aria-hidden="true"></i>Telegram</div>
+                <h1 class="md-ui-hero__title">[#BOT_TITLE#]</h1>
+                <p class="md-ui-hero__lede">Команды, события, доступы и история сообщений. Режим получения обновлений: «[#MODE_LABEL#]», соединение: «[#TRANSPORT_LABEL#]».</p>
+                <div class="md-ui-hero__meta">
+                    <span class="md-tlg-status md-tlg-status--[#CYCLE_STATE#]" title="[#CYCLE_LAST_RUN_HUMAN#]">
+                        <span class="md-status__dot" aria-hidden="true"></span>[#CYCLE_LABEL#]
+                    </span>
+                    <span class="md-ui-hero__meta-item"><i class="ti ti-user" aria-hidden="true"></i>[#BOT_SUBTITLE#]</span>
+                    <span class="md-ui-hero__meta-item"><i class="ti ti-users" aria-hidden="true"></i>Пользователей: <strong>[#USERS_TOTAL#]</strong></span>
+                    <span class="md-ui-hero__meta-item"><i class="ti ti-clock" aria-hidden="true"></i>Активность: <strong>[#LAST_ACTIVITY_HUMAN#]</strong></span>
+                </div>
+            </div>
+        </div>
+        <div class="md-ui-hero__actions">
+            <a href="<#ROOTHTML#>panel/telegram.html?view_mode=settings" class="md-btn md-btn--primary">
+                <i class="ti ti-settings" aria-hidden="true"></i><span class="md-btn__label">Настройки</span>
+            </a>
+            [#if BOT_LINK!=""#]
+            <a href="[#BOT_LINK#]" target="_blank" rel="noopener" class="md-btn md-btn--secondary">
+                <i class="ti ti-external-link" aria-hidden="true"></i><span class="md-btn__label">Открыть бота</span>
+            </a>
+            [#endif#]
+            <div class="dropdown">
+                <button type="button" class="md-btn md-btn--ghost" data-bs-toggle="dropdown" aria-expanded="false">
+                    <span class="md-btn__label">Ещё</span><i class="ti ti-chevron-down" aria-hidden="true"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end md-menu">
+                    <li><a class="dropdown-item" href="<#ROOTHTML#>panel/telegram.html?view_mode=refresh_bot"><i class="ti ti-refresh" aria-hidden="true"></i>Обновить данные бота</a></li>
+                    <li><a class="dropdown-item" href="<#ROOTHTML#>panel/telegram.html?view_mode=refresh_users"><i class="ti ti-users" aria-hidden="true"></i>Обновить профили пользователей</a></li>
+                    <li><a class="dropdown-item" href="<#ROOTHTML#>panel/telegram.html?tab=commands&amp;view_mode=sync_commands" data-md-confirm="Отправить список команд в меню Telegram?"><i class="ti ti-terminal-2" aria-hidden="true"></i>Обновить меню команд</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="<#ROOTHTML#>panel/telegram.html?tab=help"><i class="ti ti-help-circle" aria-hidden="true"></i>Справка и примеры</a></li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    [#if OK_MSG!=""#]
+    <div class="md-alert md-alert--success" role="status">
+        <i class="ti ti-circle-check md-alert__icon" aria-hidden="true"></i>
+        <div class="md-alert__body"><div class="md-alert__text">[#OK_MSG#]</div></div>
+    </div>
+    [#endif#]
+
+    [#if ERR_MSG!=""#]
+    <div class="md-alert md-alert--danger" role="alert">
+        <i class="ti ti-alert-circle md-alert__icon" aria-hidden="true"></i>
+        <div class="md-alert__body"><div class="md-alert__text">[#ERR_MSG#]</div></div>
+    </div>
+    [#endif#]
+
+    [#if TOKEN_SET="0"#]
+    <div class="md-alert md-alert--warning" role="status">
+        <i class="ti ti-key md-alert__icon" aria-hidden="true"></i>
+        <div class="md-alert__body">
+            <div class="md-alert__title">Токен бота не задан</div>
+            <div class="md-alert__text">Откройте настройки и вставьте токен от @BotFather — без него модуль не может получать сообщения и отправлять уведомления.</div>
+            <div class="md-alert__actions">
+                <a href="<#ROOTHTML#>panel/telegram.html?view_mode=settings" class="md-btn md-btn--primary md-btn--sm"><i class="ti ti-key" aria-hidden="true"></i>Указать токен</a>
+                <a href="<#ROOTHTML#>panel/telegram.html?tab=help" class="md-btn md-btn--ghost md-btn--sm">Как получить токен</a>
+            </div>
+        </div>
+    </div>
+    [#endif#]
+
+    [#if SETUP_COMPLETE="0" AND TOKEN_SET="1"#]
+    <div class="md-alert md-alert--info" role="status">
+        <i class="ti ti-list-check md-alert__icon" aria-hidden="true"></i>
+        <div class="md-alert__body">
+            <div class="md-alert__title">Настройка модуля: [#SETUP_DONE_COUNT#] из [#SETUP_TOTAL#]</div>
+            <div class="md-alert__text">Проверьте подключение, добавьте хотя бы одного пользователя и команду — чек-лист на вкладке «Обзор» подскажет следующий шаг.</div>
+        </div>
+    </div>
+    [#endif#]
+
+    <nav class="md-tabs md-tlg-tabs" aria-label="Разделы Telegram">
+        [#begin TABS#]
+        <a class="nav-link[#if ACTIVE="1"#] active[#endif#]" href="[#URL#]"[#if ACTIVE="1"#] aria-current="page"[#endif#]>
+            <i class="ti ti-[#ICON#]" aria-hidden="true"></i><span>[#TITLE#]</span>
+            [#if COUNT!=""#]<span class="md-badge md-badge--outline">[#COUNT#]</span>[#endif#]
+        </a>
+        [#end TABS#]
+    </nav>
+
+    [#if ACTIVE_TAB="overview"#]
+    [#inc telegram_overview.html#]
+    [#endif#]
+    [#if ACTIVE_TAB="users"#]
+    [#inc telegram_users.html#]
+    [#endif#]
+    [#if ACTIVE_TAB="commands"#]
+    [#inc telegram_commands.html#]
+    [#endif#]
+    [#if ACTIVE_TAB="events"#]
+    [#inc telegram_events.html#]
+    [#endif#]
+    [#if ACTIVE_TAB="history"#]
+    [#inc telegram_history.html#]
+    [#endif#]
+    [#if ACTIVE_TAB="log"#]
+    [#inc telegram_log.html#]
+    [#endif#]
+    [#if ACTIVE_TAB="help"#]
+    [#inc telegram_help.html#]
+    [#endif#]
+</div>
+

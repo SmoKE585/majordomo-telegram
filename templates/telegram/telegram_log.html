@@ -1,0 +1,69 @@
+<!--#
+ Telegram module log (cms/debmes/YYYY-MM-DD_telegram.log).
+#-->
+<section class="md-card md-tlg-log-card" aria-labelledby="mdTlgLogTitle">
+    <header class="md-card__head">
+        <div class="md-card__titles">
+            <div class="md-card__eyebrow">Диагностика</div>
+            <h2 class="md-card__title" id="mdTlgLogTitle"><i class="ti ti-file-text" aria-hidden="true"></i>Журнал модуля</h2>
+            <p class="md-card__subtitle">Уровень: <strong>[#DEBUG_LABEL#]</strong> · файл <code>[#LOG_PATH#]</code> · [#LOG_SIZE#]</p>
+        </div>
+        <div class="md-card__actions">
+            <label class="md-check md-tlg-live" for="mdTlgLogLive">
+                <input class="md-check__input" id="mdTlgLogLive" type="checkbox" data-md-tlg-log-live value="1" data-md-raw-checkbox>
+                <span class="md-check__box" aria-hidden="true"><i class="ti ti-check"></i></span>
+                <span class="md-check__text"><span class="md-check__label">Автообновление</span></span>
+            </label>
+            <button type="button" class="md-btn md-btn--ghost md-btn--sm" data-md-tlg-log-refresh>
+                <i class="ti ti-refresh" aria-hidden="true"></i><span class="md-btn__label">Обновить</span>
+            </button>
+            <button type="button" class="md-btn md-btn--ghost md-btn--sm" data-md-tlg-log-download>
+                <i class="ti ti-download" aria-hidden="true"></i><span class="md-btn__label">Скачать</span>
+            </button>
+            <a href="<#ROOTHTML#>panel/telegram.html?view_mode=clear_log" class="md-btn md-btn--danger md-btn--sm" data-md-confirm="Очистить журнал модуля за сегодня?">
+                <i class="ti ti-eraser" aria-hidden="true"></i><span class="md-btn__label">Очистить</span>
+            </a>
+        </div>
+    </header>
+
+    <form action="<#ROOTHTML#>panel/telegram.html" method="get" class="md-tlg-filterbar" name="frmLogFilter" data-md-tlg-log-form>
+        <input type="hidden" name="tab" value="log">
+        <label class="md-tlg-filterbar__search">
+            <i class="ti ti-search" aria-hidden="true"></i>
+            <input type="search" name="filter" value="[#FILTER_Q#]" placeholder="Фильтр по тексту строки" aria-label="Фильтр журнала" autocomplete="off">
+        </label>
+        <select name="limit" class="md-select" aria-label="Количество строк">
+            <option value="100" [#if LIMIT="100"#]selected[#endif#]>100 строк</option>
+            <option value="200" [#if LIMIT="200"#]selected[#endif#]>200 строк</option>
+            <option value="500" [#if LIMIT="500"#]selected[#endif#]>500 строк</option>
+            <option value="1000" [#if LIMIT="1000"#]selected[#endif#]>1000 строк</option>
+        </select>
+        <button type="submit" class="md-btn md-btn--secondary md-btn--sm"><i class="ti ti-filter" aria-hidden="true"></i>Применить</button>
+    </form>
+
+    <div class="md-card__body">
+        [#if LOG_EXISTS="1"#]
+        <div class="md-tlg-console" data-md-tlg-log-output aria-live="polite">
+            [#if HAS_LINES="1"#]
+            [#begin LOG_LINES#]
+            <div class="md-tlg-console__line"><span class="md-tlg-console__time">[#TIME#]</span><span class="md-tlg-console__text">[#TEXT#]</span></div>
+            [#end LOG_LINES#]
+            [#else#]
+            <div class="md-tlg-console__empty">Строк по фильтру нет. Попробуйте изменить запрос.</div>
+            [#endif#]
+        </div>
+        <div class="md-field__hint">Журнал пишется только при включённом Debug/Info в настройках. Ошибки транспорта и обработчиков сохраняются всегда.</div>
+        [#else#]
+        <div class="md-empty">
+            <span class="md-empty__icon"><i class="ti ti-file-off" aria-hidden="true"></i></span>
+            <div class="md-empty__title">Журнал за сегодня ещё не создан</div>
+            <p class="md-empty__text">Файл <code>[#LOG_PATH#]</code> появится после первого события модуля или ошибки.</p>
+            <div class="md-empty__actions">
+                <a href="<#ROOTHTML#>panel/telegram.html?view_mode=settings" class="md-btn md-btn--secondary md-btn--sm">Настройки журналирования</a>
+                <a href="<#ROOTHTML#>panel/telegram.html?tab=history" class="md-btn md-btn--ghost md-btn--sm">Перейти к истории</a>
+            </div>
+        </div>
+        [#endif#]
+    </div>
+</section>
+

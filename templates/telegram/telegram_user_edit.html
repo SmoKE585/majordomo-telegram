@@ -1,0 +1,226 @@
+<!--#
+ Telegram user card.
+#-->
+<div class="md-ui-page md-ui-page--stack md-tlg-page md-tlg-edit">
+    <header class="md-ui-hero">
+        <div class="md-tlg-hero__main">
+            [#if AVATAR!=""#]
+            <span class="md-tlg-bot-avatar"><img src="[#AVATAR#]" alt="" width="64" height="64"></span>
+            [#else#]
+            <span class="md-tlg-bot-avatar md-tlg-bot-avatar--empty">[#INITIALS#]</span>
+            [#endif#]
+            <div class="md-tlg-hero__text">
+                <div class="md-ui-hero__eyebrow"><i class="ti ti-user" aria-hidden="true"></i>Пользователь Telegram</div>
+                <h1 class="md-ui-hero__title">[#TITLE#]</h1>
+                <div class="md-ui-hero__meta">
+                    [#if USER_ID!=""#]<span class="md-ui-hero__meta-item"><i class="ti ti-id" aria-hidden="true"></i>chat_id: <strong>[#USER_ID#]</strong></span>[#endif#]
+                    [#if HAS_USERNAME="1"#]<span class="md-ui-hero__meta-item"><i class="ti ti-at" aria-hidden="true"></i><strong>[#USERNAME#]</strong></span>[#endif#]
+                    [#if IS_NEW="0"#]
+                    <span class="md-ui-hero__meta-item"><i class="ti ti-clock" aria-hidden="true"></i>Активность: <strong title="[#LAST_SEEN_EXACT#]">[#LAST_SEEN_HUMAN#]</strong></span>
+                    <span class="md-ui-hero__meta-item"><i class="ti ti-calendar" aria-hidden="true"></i>Добавлен: <strong>[#CREATED_HUMAN#]</strong></span>
+                    [#endif#]
+                </div>
+            </div>
+        </div>
+        <div class="md-ui-hero__actions">
+            <a href="<#ROOTHTML#>panel/telegram.html?tab=users" class="md-btn md-btn--secondary">
+                <i class="ti ti-arrow-left" aria-hidden="true"></i><span class="md-btn__label">К пользователям</span>
+            </a>
+            [#if IS_NEW="0"#]
+            <button type="button" class="md-btn md-btn--ghost" data-md-tlg-send data-chat-id="[#USER_ID#]" data-name="[#TITLE#]">
+                <i class="ti ti-send" aria-hidden="true"></i><span class="md-btn__label">Написать</span>
+            </button>
+            <a href="<#ROOTHTML#>panel/telegram.html?view_mode=delete_user&amp;id=[#ID#]" class="md-btn md-btn--danger" data-md-confirm="Удалить пользователя [#TITLE#]?">
+                <i class="ti ti-trash" aria-hidden="true"></i><span class="md-btn__label">Удалить</span>
+            </a>
+            [#endif#]
+        </div>
+    </header>
+
+    [#if SAVE_ERRORS#]
+    <div class="md-alert md-alert--danger" role="alert">
+        <i class="ti ti-alert-octagon md-alert__icon" aria-hidden="true"></i>
+        <div class="md-alert__body">
+            <div class="md-alert__title">Проверьте форму</div>
+            <ul class="md-tlg-error-list">
+                [#begin SAVE_ERRORS#]
+                <li>[#VALUE#]</li>
+                [#end SAVE_ERRORS#]
+            </ul>
+        </div>
+    </div>
+    [#endif#]
+
+    <form action="<#ROOTHTML#>panel/telegram.html" method="post" name="frmUser" class="md-tlg-edit-form">
+        <div class="md-ui-form-stack">
+            <section class="md-card" aria-labelledby="mdTlgUserProfile">
+                <header class="md-card__head">
+                    <div class="md-card__titles">
+                        <div class="md-card__eyebrow">Профиль</div>
+                        <h2 class="md-card__title" id="mdTlgUserProfile"><i class="ti ti-id" aria-hidden="true"></i>Чат и имя</h2>
+                        <p class="md-card__subtitle">chat_id — числовой идентификатор чата. Для групп и каналов он отрицательный.</p>
+                    </div>
+                    <div class="md-card__actions">
+                        <button type="button" class="md-btn md-btn--secondary md-btn--sm" data-md-tlg-refresh-user="[#ID#]">
+                            <i class="ti ti-refresh" aria-hidden="true"></i><span class="md-btn__label">Подтянуть из Telegram</span>
+                        </button>
+                    </div>
+                </header>
+                <div class="md-card__body">
+                    <div class="md-ui-form-grid">
+                        <div class="md-field">
+                            <label class="md-field__label" for="mdTlgUserId">chat_id<span class="md-field__req" aria-hidden="true">*</span><span class="md-tlg-help-tip" data-bs-toggle="tooltip" data-bs-title="Числовой ID чата. Для групп и каналов отрицательный. /id покажет его пользователю."><i class="ti ti-info-circle" aria-hidden="true"></i></span></label>
+                            <div class="md-field__control">
+                                <input type="text" class="md-input" id="mdTlgUserId" name="user_id" value="[#USER_ID#]" placeholder="123456789 или -1001234567890" required inputmode="text" spellcheck="false">
+                            </div>
+                            <div class="md-field__hint">Пользователь узнает свой ID командой <code>/id</code> или из уведомления «Незарегистрированный пользователь».</div>
+                        </div>
+                        <div class="md-field">
+                            <label class="md-field__label" for="mdTlgUserName">Имя</label>
+                            <div class="md-field__control">
+                                <input type="text" class="md-input" id="mdTlgUserName" name="name" value="[#NAME#]" placeholder="Анна Смирнова">
+                            </div>
+                            <div class="md-field__hint">Подставляется автоматически при обновлении профиля. Можно задать своё.</div>
+                        </div>
+                    </div>
+                    <div class="md-tlg-inline-result" data-md-tlg-user-result aria-live="polite"></div>
+                </div>
+            </section>
+
+            <section class="md-card" aria-labelledby="mdTlgUserAccess">
+                <header class="md-card__head">
+                    <div class="md-card__titles">
+                        <div class="md-card__eyebrow">Права</div>
+                        <h2 class="md-card__title" id="mdTlgUserAccess"><i class="ti ti-shield-lock" aria-hidden="true"></i>Что разрешено</h2>
+                        <p class="md-card__subtitle">Без прав пользователь не может выполнять команды и получать уведомления.</p>
+                    </div>
+                </header>
+                <div class="md-card__body">
+                    <div class="md-tlg-permission-grid">
+                        <label class="md-check" for="mdTlgAdmin">
+                            <input class="md-check__input" id="mdTlgAdmin" type="checkbox" name="admin" value="1" data-md-raw-checkbox[#if ADMIN="1"#] checked[#endif#]>
+                            <span class="md-check__box" aria-hidden="true"><i class="ti ti-check"></i></span>
+                            <span class="md-check__text">
+                                <span class="md-check__label">Администратор бота</span>
+                                <span class="md-check__desc">Доступ ко всем командам, включая закрытые</span>
+                            </span>
+                        </label>
+                        <label class="md-check" for="mdTlgCmd">
+                            <input class="md-check__input" id="mdTlgCmd" type="checkbox" name="cmd" value="1" data-md-raw-checkbox[#if CMD="1"#] checked[#endif#]>
+                            <span class="md-check__box" aria-hidden="true"><i class="ti ti-check"></i></span>
+                            <span class="md-check__text">
+                                <span class="md-check__label">Команды</span>
+                                <span class="md-check__desc">Может выполнять команды и получать клавиатуру</span>
+                            </span>
+                        </label>
+                        <label class="md-check" for="mdTlgHistory">
+                            <input class="md-check__input" id="mdTlgHistory" type="checkbox" name="history" value="1" data-md-raw-checkbox[#if HISTORY="1"#] checked[#endif#]>
+                            <span class="md-check__box" aria-hidden="true"><i class="ti ti-check"></i></span>
+                            <span class="md-check__text">
+                                <span class="md-check__label">Уведомления</span>
+                                <span class="md-check__desc">Получать сообщения из системы (SAY)</span>
+                            </span>
+                        </label>
+                        <label class="md-check" for="mdTlgPatterns">
+                            <input class="md-check__input" id="mdTlgPatterns" type="checkbox" name="patterns" value="1" data-md-raw-checkbox[#if PATTERNS="1"#] checked[#endif#]>
+                            <span class="md-check__box" aria-hidden="true"><i class="ti ti-check"></i></span>
+                            <span class="md-check__text">
+                                <span class="md-check__label">Свободный текст</span>
+                                <span class="md-check__desc">Передавать сообщения в системный чат</span>
+                            </span>
+                        </label>
+                        <label class="md-check" for="mdTlgDownload">
+                            <input class="md-check__input" id="mdTlgDownload" type="checkbox" name="download" value="1" data-md-raw-checkbox[#if DOWNLOAD="1"#] checked[#endif#]>
+                            <span class="md-check__box" aria-hidden="true"><i class="ti ti-check"></i></span>
+                            <span class="md-check__text">
+                                <span class="md-check__label">Приём файлов</span>
+                                <span class="md-check__desc">Скачивать фото, видео и документы в хранилище</span>
+                            </span>
+                        </label>
+                        <label class="md-check" for="mdTlgPlay">
+                            <input class="md-check__input" id="mdTlgPlay" type="checkbox" name="play" value="1" data-md-raw-checkbox[#if PLAY="1"#] checked[#endif#]>
+                            <span class="md-check__box" aria-hidden="true"><i class="ti ti-check"></i></span>
+                            <span class="md-check__text">
+                                <span class="md-check__label">Проигрывание голоса</span>
+                                <span class="md-check__desc">Воспроизводить voice/audio на сервере</span>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+            </section>
+
+            <section class="md-card" aria-labelledby="mdTlgUserPrefs">
+                <header class="md-card__head">
+                    <div class="md-card__titles">
+                        <div class="md-card__eyebrow">Доставка</div>
+                        <h2 class="md-card__title" id="mdTlgUserPrefs"><i class="ti ti-bell" aria-hidden="true"></i>Уведомления и привязка</h2>
+                        <p class="md-card__subtitle">Уровни важности и соответствие пользователю MajorDoMo.</p>
+                    </div>
+                </header>
+                <div class="md-card__body">
+                    <div class="md-ui-form-stack">
+                        <div class="md-field">
+                            <label class="md-field__label" for="mdTlgMember">Пользователь системы</label>
+                            <div class="md-field__control">
+                                <select class="md-select" id="mdTlgMember" name="member_id">
+                                    <option value="0">Не привязан</option>
+                                    [#begin MEMBERS#]
+                                    <option value="[#ID#]" [#if SELECTED="1"#]selected[#endif#]>[#NAME#]</option>
+                                    [#end MEMBERS#]
+                                </select>
+                            </div>
+                            <div class="md-field__hint">Нужна для геолокации, системного чата и сценариев, которые ищут пользователя по MEMBER_ID.</div>
+                        </div>
+
+                        <label class="md-check" for="mdTlgSilent">
+                            <input class="md-check__input" id="mdTlgSilent" type="checkbox" name="silent" value="1" data-md-raw-checkbox[#if SILENT="1"#] checked[#endif#]>
+                            <span class="md-check__box" aria-hidden="true"><i class="ti ti-check"></i></span>
+                            <span class="md-check__text">
+                                <span class="md-check__label">Без звука по умолчанию</span>
+                                <span class="md-check__desc">Все сообщения приходят без уведомления</span>
+                            </span>
+                        </label>
+
+                        <div class="md-ui-form-grid">
+                            <div class="md-field">
+                                <label class="md-field__label" for="mdTlgLevel">Приоритет истории</label>
+                                <div class="md-field__control">
+                                    <select class="md-select" id="mdTlgLevel" name="history_level">
+                                        [#begin LEVEL_OPTIONS#]
+                                        <option value="[#VALUE#]" [#if SELECTED="1"#]selected[#endif#]>[#TITLE#]</option>
+                                        [#end LEVEL_OPTIONS#]
+                                    </select>
+                                </div>
+                                <div class="md-field__hint">Сообщения с уровнем ниже не отправляются.</div>
+                            </div>
+                            <div class="md-field">
+                                <label class="md-field__label" for="mdTlgSilentLevel">Со звуком от уровня</label>
+                                <div class="md-field__control">
+                                    <select class="md-select" id="mdTlgSilentLevel" name="history_silent">
+                                        [#begin SILENT_OPTIONS#]
+                                        <option value="[#VALUE#]" [#if SELECTED="1"#]selected[#endif#]>[#TITLE#]</option>
+                                        [#end SILENT_OPTIONS#]
+                                    </select>
+                                </div>
+                                <div class="md-field__hint">Сообщения важнее порога придут со звуком, остальные — тихо.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div class="md-ui-form-actions">
+            <button type="submit" class="md-btn md-btn--primary">
+                <i class="ti ti-device-floppy" aria-hidden="true"></i><span class="md-btn__label">Сохранить</span>
+            </button>
+            <a href="<#ROOTHTML#>panel/telegram.html?tab=users" class="md-btn md-btn--secondary">Отмена</a>
+        </div>
+        <input type="hidden" name="view_mode" value="edit_user">
+        <input type="hidden" name="id" value="[#ID#]">
+        <input type="hidden" name="mode" value="update">
+        <input type="hidden" name="tab" value="users">
+    </form>
+</div>
+
+

@@ -1,0 +1,513 @@
+<!--#
+ Telegram settings: token, transport/proxy/MTProto, webhook, storage.
+#-->
+<div class="md-ui-page md-ui-page--stack md-tlg-page md-tlg-settings">
+    <header class="md-ui-hero">
+        <div>
+            <div class="md-ui-hero__eyebrow"><i class="ti ti-settings" aria-hidden="true"></i>Telegram</div>
+            <h1 class="md-ui-hero__title">Настройки модуля</h1>
+            <p class="md-ui-hero__lede">Токен бота, способ выхода в Telegram, webhook, хранение файлов и журналирование.</p>
+            <div class="md-ui-hero__meta">
+                <span class="md-ui-hero__meta-item"><i class="ti ti-key" aria-hidden="true"></i>Токен: <strong>[#TOKEN_MASK#]</strong></span>
+                <span class="md-ui-hero__meta-item"><i class="ti ti-route" aria-hidden="true"></i>Транспорт: <strong>[#TRANSPORT_LABEL#]</strong></span>
+                <span class="md-ui-hero__meta-item"><i class="ti ti-arrows-exchange" aria-hidden="true"></i>Режим: <strong>[#if WEBHOOK="1"#]Webhook[#else#]Long polling[#endif#]</strong></span>
+            </div>
+        </div>
+        <div class="md-ui-hero__actions">
+            <button type="button" class="md-btn md-btn--secondary" data-md-tlg-check>
+                <i class="ti ti-activity" aria-hidden="true"></i><span class="md-btn__label">Проверить связь</span>
+            </button>
+            <a href="<#ROOTHTML#>panel/telegram.html?tab=overview" class="md-btn md-btn--ghost">
+                <i class="ti ti-arrow-left" aria-hidden="true"></i><span class="md-btn__label">К обзору</span>
+            </a>
+        </div>
+    </header>
+
+    [#if OK_MSG!=""#]
+    <div class="md-alert md-alert--success" role="status">
+        <i class="ti ti-circle-check md-alert__icon" aria-hidden="true"></i>
+        <div class="md-alert__body"><div class="md-alert__text">[#OK_MSG#]</div></div>
+    </div>
+    [#endif#]
+
+    <div class="md-tlg-inline-result" data-md-tlg-check-result aria-live="polite"></div>
+
+    [#if ERR_MSG!=""#]
+    <div class="md-alert md-alert--danger" role="alert">
+        <i class="ti ti-alert-circle md-alert__icon" aria-hidden="true"></i>
+        <div class="md-alert__body"><div class="md-alert__text">[#ERR_MSG#]</div></div>
+    </div>
+    [#endif#]
+
+    [#if SAVE_ERRORS#]
+    <div class="md-alert md-alert--danger" role="alert">
+        <i class="ti ti-alert-octagon md-alert__icon" aria-hidden="true"></i>
+        <div class="md-alert__body">
+            <div class="md-alert__title">Настройки не сохранены</div>
+            <ul class="md-tlg-error-list">
+                [#begin SAVE_ERRORS#]
+                <li>[#VALUE#]</li>
+                [#end SAVE_ERRORS#]
+            </ul>
+        </div>
+    </div>
+    [#endif#]
+
+    <div class="md-alert md-alert--info" role="status">
+        <i class="ti ti-info-circle md-alert__icon" aria-hidden="true"></i>
+        <div class="md-alert__body">
+            <div class="md-alert__text">После сохранения цикл <code>telegram</code> перезапустится автоматически. Секретные поля (токен, пароль прокси, secret webhook) не показываются полностью: оставьте поле пустым, чтобы сохранить текущее значение.</div>
+        </div>
+    </div>
+
+    <form action="<#ROOTHTML#>panel/telegram.html?view_mode=update_settings" method="post" name="frmSettings" class="md-tlg-settings-form" autocomplete="off">
+        <div class="md-ui-form-stack">
+            <section class="md-card" aria-labelledby="mdTlgBotCard">
+                <header class="md-card__head">
+                    <div class="md-card__titles">
+                        <div class="md-card__eyebrow">Подключение</div>
+                        <h2 class="md-card__title" id="mdTlgBotCard"><i class="ti ti-key" aria-hidden="true"></i>Бот и API</h2>
+                        <p class="md-card__subtitle">Токен от @BotFather и параметры HTTP-запросов.</p>
+                    </div>
+                    <div class="md-card__actions">
+                        [#if BOT_AVATAR!=""#]<span class="md-tlg-bot-avatar md-tlg-bot-avatar--sm"><img src="[#BOT_AVATAR#]" alt="" width="36" height="36"></span>[#endif#]
+                        <span class="md-badge md-badge--[#if BOT_CHECKED="1"#]success[#else#]neutral[#endif#]">[#if BOT_CHECKED="1"#]проверен[#else#]не проверен[#endif#]</span>
+                    </div>
+                </header>
+                <div class="md-card__body">
+                    <div class="md-ui-form-stack">
+                        <div class="md-field">
+                            <label class="md-field__label" for="mdTlgToken">Токен бота<span class="md-tlg-help-tip" data-bs-toggle="tooltip" data-bs-title="Токен даёт полный доступ к боту. Никому не передавайте его."><i class="ti ti-info-circle" aria-hidden="true"></i></span></label>
+                            <div class="md-field__control md-tlg-input-action">
+                                <input type="password" class="md-input" id="mdTlgToken" name="tlg_token" value="" placeholder="[#if TOKEN_SET="1"#][#TOKEN_MASK#] — оставьте пустым, чтобы не менять[#else#]123456789:AAHe... [#endif#]" autocomplete="new-password" spellcheck="false">
+                                <button type="button" class="md-icon-btn md-icon-btn--sm" data-md-tlg-password-toggle="mdTlgToken" aria-label="Показать токен" title="Показать токен">
+                                    <i class="ti ti-eye" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                            <div class="md-field__hint">Напишите @BotFather команду <code>/newbot</code> или <code>/token</code> и скопируйте токен. Не публикуйте его: токен даёт полный доступ к боту.</div>
+                        </div>
+
+                        <div class="md-ui-form-grid">
+                            <div class="md-field">
+                                <label class="md-field__label" for="mdTlgHttpTimeout">Таймаут запроса, сек<span class="md-tlg-help-tip" data-bs-toggle="tooltip" data-bs-title="Сколько секунд ждать ответ API. Должен быть больше long polling."><i class="ti ti-info-circle" aria-hidden="true"></i></span></label>
+                                <div class="md-field__control">
+                                    <input type="number" class="md-input" id="mdTlgHttpTimeout" name="tlg_http_timeout" value="[#HTTP_TIMEOUT#]" min="3" max="120" step="1" inputmode="numeric">
+                                </div>
+                                <div class="md-field__hint">Сколько ждать ответ Bot API. Для медленного прокси увеличьте до 30–60.</div>
+                            </div>
+                            <div class="md-field">
+                                <label class="md-field__label" for="mdTlgPollTimeout">Long polling, сек</label>
+                                <div class="md-field__control">
+                                    <input type="number" class="md-input" id="mdTlgPollTimeout" name="tlg_timeout" value="[#POLL_TIMEOUT#]" min="0" max="50" step="1" inputmode="numeric">
+                                </div>
+                                <div class="md-field__hint">Время удержания запроса getUpdates. 0 — без ожидания, 25–50 — экономия запросов.</div>
+                            </div>
+                        </div>
+
+                        <div class="md-ui-form-grid">
+                            <div class="md-field">
+                                <label class="md-field__label" for="mdTlgIpResolv">Версия IP</label>
+                                <div class="md-field__control">
+                                    <select class="md-select" id="mdTlgIpResolv" name="tlg_ipresolv">
+                                        <option value="any" [#if IPRESOLV="any"#]selected[#endif#]>Автоматически</option>
+                                        <option value="ipv4" [#if IPRESOLV="ipv4"#]selected[#endif#]>Только IPv4</option>
+                                        <option value="ipv6" [#if IPRESOLV="ipv6"#]selected[#endif#]>Только IPv6</option>
+                                    </select>
+                                </div>
+                                <div class="md-field__hint">Если у сервера сломан IPv6, принудительный IPv4 часто ускоряет соединение.</div>
+                            </div>
+                            <div class="md-field">
+                                <span class="md-field__label">TLS-сертификат</span>
+                                <label class="md-check" for="mdTlgSslVerify">
+                                    <input class="md-check__input" id="mdTlgSslVerify" type="checkbox" name="tlg_ssl_verify" value="1" data-md-raw-checkbox[#if SSL_VERIFY="1"#] checked[#endif#]>
+                                    <span class="md-check__box" aria-hidden="true"><i class="ti ti-check"></i></span>
+                                    <span class="md-check__text">
+                                        <span class="md-check__label">Проверять сертификат</span>
+                                        <span class="md-check__desc">Отключайте только для отладки собственного прокси</span>
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="md-field">
+                            <label class="md-field__label" for="mdTlgApiBase">Базовый URL Bot API</label>
+                            <div class="md-field__control">
+                                <input type="text" class="md-input" id="mdTlgApiBase" name="tlg_api_base" value="[#API_BASE#]" placeholder="https://api.telegram.org" spellcheck="false">
+                            </div>
+                            <div class="md-field__hint">Обычно пусто. Заполняется для локального Bot API сервера, например <code>http://127.0.0.1:8081</code>. Сейчас используется: <code>[#API_BASE_EFFECTIVE#]</code>.</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="md-card" aria-labelledby="mdTlgTransportCard">
+                <header class="md-card__head">
+                    <div class="md-card__titles">
+                        <div class="md-card__eyebrow">Сеть</div>
+                        <h2 class="md-card__title" id="mdTlgTransportCard"><i class="ti ti-route" aria-hidden="true"></i>Прокси и обход блокировок</h2>
+                        <p class="md-card__subtitle">Выберите, как MajorDoMo выходит в Telegram. Настройка влияет на все запросы модуля.</p>
+                    </div>
+                </header>
+                <div class="md-card__body">
+                    <div class="md-choice-group md-tlg-transport-group" role="radiogroup" aria-label="Способ подключения к Telegram">
+                        [#begin TRANSPORT_OPTIONS#]
+                        <label class="md-choice">
+                            <input class="md-choice__input" type="radio" name="tlg_transport" value="[#VALUE#]" data-md-raw-checkbox data-md-tlg-transport data-md-tlg-hint="[#hint#]"[#if SELECTED="1"#] checked[#endif#]>
+                            <span class="md-choice__surface">
+                                <span class="md-choice__icon"><i class="ti ti-[#icon#]" aria-hidden="true"></i></span>
+                                <span class="md-choice__body">
+                                    <span class="md-choice__title">[#label#]</span>
+                                    <span class="md-choice__desc">[#description#]</span>
+                                </span>
+                                <span class="md-choice__marker" aria-hidden="true"></span>
+                            </span>
+                        </label>
+                        [#end TRANSPORT_OPTIONS#]
+                    </div>
+                    <div class="md-tlg-transport-hint" data-md-tlg-transport-hint>
+                        <i class="ti ti-info-circle" aria-hidden="true"></i><span>[#TRANSPORT_HINT#]</span>
+                    </div>
+
+                    <div class="md-tlg-panel" data-md-tlg-panel="proxy" [#if PROXY_MODE!="1"#]hidden[#endif#]>
+                        <div class="md-ui-form-grid">
+                            <div class="md-field">
+                                <label class="md-field__label" for="mdTlgProxyHost">Хост прокси<span class="md-tlg-help-tip" data-bs-toggle="tooltip" data-bs-title="DNS-имя или IP прокси без схемы: 127.0.0.1."><i class="ti ti-info-circle" aria-hidden="true"></i></span></label>
+                                <div class="md-field__control">
+                                    <input type="text" class="md-input" id="mdTlgProxyHost" name="tlg_proxy_host" value="[#PROXY_HOST#]" placeholder="127.0.0.1 или proxy.example.com" spellcheck="false">
+                                </div>
+                                <div class="md-field__hint">Без схемы. Для Tor обычно <code>127.0.0.1</code> и порт <code>9050</code>.</div>
+                            </div>
+                            <div class="md-field">
+                                <label class="md-field__label" for="mdTlgProxyPort">Порт</label>
+                                <div class="md-field__control">
+                                    <input type="number" class="md-input" id="mdTlgProxyPort" name="tlg_proxy_port" value="[#PROXY_PORT#]" min="1" max="65535" step="1" inputmode="numeric">
+                                </div>
+                                <div class="md-field__hint">HTTP/HTTPS: 3128/8080, SOCKS5: 1080.</div>
+                            </div>
+                        </div>
+                        <div class="md-ui-form-grid">
+                            <div class="md-field">
+                                <label class="md-field__label" for="mdTlgProxyLogin">Логин</label>
+                                <div class="md-field__control">
+                                    <input type="text" class="md-input" id="mdTlgProxyLogin" name="tlg_proxy_login" value="[#PROXY_LOGIN#]" autocomplete="off">
+                                </div>
+                            </div>
+                            <div class="md-field">
+                                <label class="md-field__label" for="mdTlgProxyPassword">Пароль</label>
+                                <div class="md-field__control md-tlg-input-action">
+                                    <input type="password" class="md-input" id="mdTlgProxyPassword" name="tlg_proxy_password" value="" placeholder="[#if PROXY_PASSWORD_SET="1"#]сохранён — оставьте пустым[#else#]не задан[#endif#]" autocomplete="new-password">
+                                    <button type="button" class="md-icon-btn md-icon-btn--sm" data-md-tlg-password-toggle="mdTlgProxyPassword" aria-label="Показать пароль" title="Показать пароль">
+                                        <i class="ti ti-eye" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                                <div class="md-field__hint">Пароли со спецсимволами поддерживаются. Чтобы удалить сохранённый пароль, отметьте чекбокс ниже.</div>
+                            </div>
+                        </div>
+                        <div class="md-tlg-inline-actions">
+                            <button type="button" class="md-btn md-btn--secondary md-btn--sm" data-md-tlg-check-proxy>
+                                <i class="ti ti-plug" aria-hidden="true"></i><span class="md-btn__label">Проверить порт прокси</span>
+                            </button>
+                            <label class="md-check" for="mdTlgProxyPasswordClear">
+                                <input class="md-check__input" id="mdTlgProxyPasswordClear" type="checkbox" name="tlg_proxy_password_clear" value="1" data-md-raw-checkbox>
+                                <span class="md-check__box" aria-hidden="true"><i class="ti ti-check"></i></span>
+                                <span class="md-check__text"><span class="md-check__label">Удалить сохранённый пароль</span></span>
+                            </label>
+                            <span class="md-tlg-inline-result" data-md-tlg-proxy-result aria-live="polite"></span>
+                        </div>
+                    </div>
+
+                    <div class="md-tlg-panel" data-md-tlg-panel="transparent" [#if TRANSPORT!="transparent"#]hidden[#endif#]>
+                        <div class="md-alert md-alert--info" role="status">
+                            <i class="ti ti-arrows-shuffle md-alert__icon" aria-hidden="true"></i>
+                            <div class="md-alert__body">
+                                <div class="md-alert__title">cURL не использует прокси напрямую</div>
+                                <div class="md-alert__text">Маршрут должен быть настроен на уровне системы: VPN, tun2socks/redsocks, политика маршрутизации или nginx stream с SNI-роутингом. Модуль доверяет системному маршруту.</div>
+                            </div>
+                        </div>
+                        <div class="md-tlg-codeblock">
+                            <div class="md-tlg-codeblock__head">
+                                <span><i class="ti ti-file-code" aria-hidden="true"></i>nginx stream: SNI-маршрут для api.telegram.org</span>
+                                <button type="button" class="md-btn md-btn--ghost md-btn--sm" data-md-tlg-copy-target="mdTlgNginxExample"><i class="ti ti-copy" aria-hidden="true"></i>Копировать</button>
+                            </div>
+                            <pre class="md-tlg-pre" id="mdTlgNginxExample">[#EXAMPLE_NGINX#]</pre>
+                        </div>
+                    </div>
+
+                    <div class="md-tlg-panel" data-md-tlg-panel="local" [#if TRANSPORT!="local_api"#]hidden[#endif#]>
+                        <div class="md-alert md-alert--info" role="status">
+                            <i class="ti ti-server-2 md-alert__icon" aria-hidden="true"></i>
+                            <div class="md-alert__body">
+                                <div class="md-alert__title">Локальный Bot API — самый устойчивый вариант</div>
+                                <div class="md-alert__text">Сервер <code>telegram-bot-api</code> запускается рядом с MajorDoMo, общается с Telegram по MTProto и отдаёт обычный Bot API на localhost. В поле «Базовый URL» укажите <code>http://127.0.0.1:8081</code>.</div>
+                            </div>
+                        </div>
+                        <div class="md-ui-form-grid">
+                            <div class="md-field">
+                                <label class="md-field__label" for="mdTlgMtApiId">api_id</label>
+                                <div class="md-field__control">
+                                    <input type="text" class="md-input" id="mdTlgMtApiId" name="tlg_mt_api_id" value="[#MT_API_ID#]" placeholder="1234567" inputmode="numeric">
+                                </div>
+                                <div class="md-field__hint">Получите на <a href="https://my.telegram.org/apps" target="_blank" rel="noopener">my.telegram.org/apps</a>.</div>
+                            </div>
+                            <div class="md-field">
+                                <label class="md-field__label" for="mdTlgMtApiHash">api_hash</label>
+                                <div class="md-field__control md-tlg-input-action">
+                                    <input type="password" class="md-input" id="mdTlgMtApiHash" name="tlg_mt_api_hash" value="" placeholder="[#if MT_API_HASH_SET="1"#]сохранён — оставьте пустым[#else#]не задан[#endif#]" autocomplete="new-password">
+                                    <button type="button" class="md-icon-btn md-icon-btn--sm" data-md-tlg-password-toggle="mdTlgMtApiHash" aria-label="Показать api_hash" title="Показать api_hash">
+                                        <i class="ti ti-eye" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                                <div class="md-field__hint">Нужен только для запуска локального сервера, в запросах Bot API не передаётся.</div>
+                            </div>
+                        </div>
+                        <div class="md-tlg-codeblock">
+                            <div class="md-tlg-codeblock__head">
+                                <span><i class="ti ti-brand-docker" aria-hidden="true"></i>Пример запуска telegram-bot-api</span>
+                                <button type="button" class="md-btn md-btn--ghost md-btn--sm" data-md-tlg-copy-target="mdTlgBotApiExample"><i class="ti ti-copy" aria-hidden="true"></i>Копировать</button>
+                            </div>
+                            <pre class="md-tlg-pre" id="mdTlgBotApiExample">[#EXAMPLE_BOT_API#]</pre>
+                            <div class="md-field__hint">Контейнер слушает только localhost. Он получает обновления по MTProto, поэтому блокировки HTTP Bot API на него не влияют.</div>
+                        </div>
+                    </div>
+
+                    <div class="md-tlg-panel md-tlg-mtproto" data-md-tlg-panel="mtproto">
+                        <div class="md-field">
+                            <label class="md-field__label" for="mdTlgMtUrl">Ссылка MTProto / SOCKS-прокси<span class="md-tlg-help-tip" data-bs-toggle="tooltip" data-bs-title="tg://socks можно применить к SOCKS5. tg://proxy — MTProto для клиентов, не для Bot API."><i class="ti ti-info-circle" aria-hidden="true"></i></span></label>
+                            <div class="md-field__control md-tlg-input-action">
+                                <input type="text" class="md-input" id="mdTlgMtUrl" name="tlg_proxy_mt_url" value="[#PROXY_MT_URL#]" placeholder="tg://proxy?server=...&amp;port=...&amp;secret=... или tg://socks?..." spellcheck="false">
+                                <button type="button" class="md-icon-btn md-icon-btn--sm" data-md-tlg-parse-link aria-label="Разобрать ссылку" title="Разобрать ссылку">
+                                    <i class="ti ti-wand" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                            <div class="md-field__hint">Вставьте ссылку из Telegram. <code>tg://socks</code> можно применить к SOCKS5. <code>tg://proxy</code> — это MTProto-прокси для клиентов: Bot API через него напрямую не работает, используйте локальный Bot API + VPN/прозрачный прокси.</div>
+                        </div>
+                        <div class="md-tlg-parse-result" data-md-tlg-parse-result aria-live="polite"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="md-card" aria-labelledby="mdTlgWebhookCard">
+                <header class="md-card__head">
+                    <div class="md-card__titles">
+                        <div class="md-card__eyebrow">Доставка</div>
+                        <h2 class="md-card__title" id="mdTlgWebhookCard"><i class="ti ti-webhook" aria-hidden="true"></i>Webhook</h2>
+                        <p class="md-card__subtitle">Telegram сам присылает обновления на HTTPS-адрес. Быстрее опроса, но требует внешнего HTTPS и домена.</p>
+                    </div>
+                    <div class="md-card__actions">
+                        <span class="md-badge md-badge--[#if WEBHOOK="1"#]success[#else#]neutral[#endif#]">[#if WEBHOOK="1"#]включён[#else#]опрос[#endif#]</span>
+                    </div>
+                </header>
+                <div class="md-card__body">
+                    <div class="md-ui-form-stack">
+                        <label class="md-check" for="mdTlgWebhook">
+                            <input class="md-check__input" id="mdTlgWebhook" type="checkbox" name="tlg_webhook" value="1" data-md-raw-checkbox data-md-tlg-webhook[#if WEBHOOK="1"#] checked[#endif#]>
+                            <span class="md-check__box" aria-hidden="true"><i class="ti ti-check"></i></span>
+                            <span class="md-check__text">
+                                <span class="md-check__label">Использовать webhook</span>
+                                <span class="md-check__desc">Выключено — модуль опрашивает getUpdates в цикле</span>
+                            </span>
+                        </label>
+
+                        <div class="md-tlg-panel" data-md-tlg-panel="webhook" [#if WEBHOOK!="1"#]hidden[#endif#]>
+                            <div class="md-field">
+                                <label class="md-field__label" for="mdTlgWebhookUrl">URL webhook</label>
+                                <div class="md-field__control">
+                                    <input type="text" class="md-input" id="mdTlgWebhookUrl" name="tlg_webhook_url" value="[#WEBHOOK_URL#]" placeholder="[#WEBHOOK_URL_DEFAULT#]" spellcheck="false">
+                                </div>
+                                <div class="md-field__hint">Только HTTPS с валидным сертификатом. По умолчанию: <code>[#WEBHOOK_URL_DEFAULT#]</code>. Файл <code>public/webhook_telegram.php</code> должен быть доступен по этому адресу.</div>
+                            </div>
+
+                            <div class="md-ui-form-grid">
+                                <div class="md-field">
+                                    <label class="md-field__label" for="mdTlgWebhookSecret">Secret token</label>
+                                    <div class="md-field__control md-tlg-input-action">
+                                        <input type="text" class="md-input" id="mdTlgWebhookSecret" name="tlg_webhook_secret" value="[#WEBHOOK_SECRET#]" placeholder="Будет создан автоматически" spellcheck="false">
+                                        <button type="button" class="md-icon-btn md-icon-btn--sm" data-md-tlg-generate-secret aria-label="Сгенерировать secret" title="Сгенерировать secret">
+                                            <i class="ti ti-refresh" aria-hidden="true"></i>
+                                        </button>
+                                        <button type="button" class="md-icon-btn md-icon-btn--sm" data-md-tlg-copy-target="mdTlgWebhookSecret" aria-label="Копировать secret" title="Копировать secret">
+                                            <i class="ti ti-copy" aria-hidden="true"></i>
+                                        </button>
+                                    </div>
+                                    <div class="md-field__hint">Telegram присылает его в заголовке <code>X-Telegram-Bot-Api-Secret-Token</code>; точка входа отклоняет чужие запросы.</div>
+                                </div>
+                                <div class="md-field">
+                                    <label class="md-field__label" for="mdTlgWebhookCert">Путь к сертификату</label>
+                                    <div class="md-field__control">
+                                        <input type="text" class="md-input" id="mdTlgWebhookCert" name="tlg_webhook_cert" value="[#WEBHOOK_CERT#]" placeholder="не требуется для Let's Encrypt" spellcheck="false">
+                                    </div>
+                                    <div class="md-field__hint">Только для самоподписанного сертификата (self-signed).</div>
+                                </div>
+                            </div>
+
+                            <div class="md-ui-form-grid">
+                                <div class="md-field">
+                                    <label class="md-field__label" for="mdTlgWebhookMaxConn">max_connections</label>
+                                    <div class="md-field__control">
+                                        <input type="number" class="md-input" id="mdTlgWebhookMaxConn" name="tlg_webhook_max_conn" value="[#WEBHOOK_MAX_CONN#]" min="1" max="100" step="1" inputmode="numeric">
+                                    </div>
+                                    <div class="md-field__hint">Сколько соединений держать открытыми. 40 — типовое значение.</div>
+                                </div>
+                                <div class="md-field">
+                                    <span class="md-field__label">Очередь</span>
+                                    <label class="md-check" for="mdTlgWebhookDrop">
+                                        <input class="md-check__input" id="mdTlgWebhookDrop" type="checkbox" name="tlg_webhook_drop_pending" value="1" data-md-raw-checkbox[#if WEBHOOK_DROP_PENDING="1"#] checked[#endif#]>
+                                        <span class="md-check__box" aria-hidden="true"><i class="ti ti-check"></i></span>
+                                        <span class="md-check__text">
+                                            <span class="md-check__label">Сбросить накопленные обновления</span>
+                                            <span class="md-check__desc">drop_pending_updates при установке или снятии webhook</span>
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="md-field">
+                                <span class="md-field__label">Типы обновлений<span class="md-tlg-help-tip" data-bs-toggle="tooltip" data-bs-title="Если ничего не выбрать, Telegram присылает все типы обновлений."><i class="ti ti-info-circle" aria-hidden="true"></i></span></span>
+                                <div class="md-tlg-check-grid">
+                                    [#begin ALLOWED_UPDATES#]
+                                    <label class="md-check" for="mdTlgUpd[#VALUE#]">
+                                        <input class="md-check__input" id="mdTlgUpd[#VALUE#]" type="checkbox" name="allowed_updates[]" value="[#VALUE#]" data-md-raw-checkbox[#if CHECKED="1"#] checked[#endif#]>
+                                        <span class="md-check__box" aria-hidden="true"><i class="ti ti-check"></i></span>
+                                        <span class="md-check__text"><span class="md-check__label">[#LABEL#]</span><code class="md-tlg-check-code">[#VALUE#]</code></span>
+                                    </label>
+                                    [#end ALLOWED_UPDATES#]
+                                </div>
+                                <div class="md-field__hint">Если не выбрать ни одного, Telegram присылает все типы. Для экономии трафика оставьте только нужные.</div>
+                            </div>
+
+                            <div class="md-tlg-inline-actions">
+                                <button type="button" class="md-btn md-btn--primary md-btn--sm" data-md-tlg-webhook-set>
+                                    <i class="ti ti-cloud-up" aria-hidden="true"></i><span class="md-btn__label">Установить webhook</span>
+                                </button>
+                                <button type="button" class="md-btn md-btn--secondary md-btn--sm" data-md-tlg-webhook-delete>
+                                    <i class="ti ti-cloud-off" aria-hidden="true"></i><span class="md-btn__label">Снять webhook</span>
+                                </button>
+                                <button type="button" class="md-btn md-btn--ghost md-btn--sm" data-md-tlg-webhook-info>
+                                    <i class="ti ti-info-circle" aria-hidden="true"></i><span class="md-btn__label">Статус</span>
+                                </button>
+                                <span class="md-tlg-inline-result" data-md-tlg-webhook-result aria-live="polite"></span>
+                            </div>
+                            <div class="md-tlg-json" data-md-tlg-webhook-status hidden></div>
+                        </div>
+
+                        <div class="md-alert md-alert--warning" role="status">
+                            <i class="ti ti-alert-triangle md-alert__icon" aria-hidden="true"></i>
+                            <div class="md-alert__body">
+                                <div class="md-alert__text">Перед выключением webhook обязательно нажмите «Снять webhook». Иначе Telegram продолжит слать обновления и <code>getUpdates</code> вернёт конфликт 409.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="md-card" aria-labelledby="mdTlgBehaviorCard">
+                <header class="md-card__head">
+                    <div class="md-card__titles">
+                        <div class="md-card__eyebrow">Поведение</div>
+                        <h2 class="md-card__title" id="mdTlgBehaviorCard"><i class="ti ti-adjustments-horizontal" aria-hidden="true"></i>Пользователи, файлы и журнал</h2>
+                        <p class="md-card__subtitle">Что делать с новыми пользователями, входящими файлами и историей сообщений.</p>
+                    </div>
+                </header>
+                <div class="md-card__body">
+                    <div class="md-ui-form-stack">
+                        <div class="md-ui-form-grid">
+                            <div class="md-field">
+                                <label class="md-field__label" for="mdTlgCountRow">Кнопок в ряду</label>
+                                <div class="md-field__control">
+                                    <input type="number" class="md-input" id="mdTlgCountRow" name="tlg_count_row" value="[#COUNT_ROW#]" min="1" max="10" step="1" inputmode="numeric">
+                                </div>
+                                <div class="md-field__hint">Сколько команд показывать в одной строке reply-клавиатуры.</div>
+                            </div>
+                            <div class="md-field">
+                                <label class="md-field__label" for="mdTlgPlayer">Проигрывание голосовых</label>
+                                <div class="md-field__control">
+                                    <select class="md-select" id="mdTlgPlayer" name="tlg_player">
+                                        <option value="1" [#if PLAYER="1"#]selected[#endif#]>playSound (локально)</option>
+                                        <option value="2" [#if PLAYER="2"#]selected[#endif#]>playMedia (медиа-плеер)</option>
+                                    </select>
+                                </div>
+                                <div class="md-field__hint">Используется, когда у пользователя включено право «Голос».</div>
+                            </div>
+                        </div>
+
+                        <div class="md-ui-form-grid">
+                            <div class="md-field">
+                                <label class="md-field__label" for="mdTlgStorage">Хранилище файлов</label>
+                                <div class="md-field__control">
+                                    <input type="text" class="md-input" id="mdTlgStorage" name="tlg_storage" value="[#STORAGE#]" placeholder="cms/cached/telegram" spellcheck="false">
+                                </div>
+                                <div class="md-field__hint">Эффективный путь: <code>[#STORAGE_EFFECTIVE#]</code>.[#if STORAGE_WRITABLE="1"#] Каталог доступен для записи.[#else#] <strong>Каталог недоступен для записи.</strong>[#endif#]</div>
+                            </div>
+                            <div class="md-field">
+                                <label class="md-field__label" for="mdTlgDebug">Уровень журнала</label>
+                                <div class="md-field__control">
+                                    <select class="md-select" id="mdTlgDebug" name="tlg_debug">
+                                        <option value="0" [#if DEBUG_LEVEL="0"#]selected[#endif#]>Info — важные события</option>
+                                        <option value="1" [#if DEBUG_LEVEL="1"#]selected[#endif#]>Debug — все запросы</option>
+                                        <option value="2" [#if DEBUG_LEVEL="2"#]selected[#endif#]>Только ошибки</option>
+                                    </select>
+                                </div>
+                                <div class="md-field__hint">Файл журнала: <code>[#LOG_PATH#]</code>[#if LOG_EXISTS="1"#] (создан)[#endif#].</div>
+                            </div>
+                        </div>
+
+                        <div class="md-ui-form-grid">
+                            <label class="md-check" for="mdTlgRegUser">
+                                <input class="md-check__input" id="mdTlgRegUser" type="checkbox" name="tlg_reg_user" value="1" data-md-raw-checkbox[#if REG_USER="1"#] checked[#endif#]>
+                                <span class="md-check__box" aria-hidden="true"><i class="ti ti-check"></i></span>
+                                <span class="md-check__text">
+                                    <span class="md-check__label">Регистрировать по /start</span>
+                                    <span class="md-check__desc">Создавать запись пользователя без доступа</span>
+                                </span>
+                            </label>
+                            <label class="md-check" for="mdTlgHistoryOnlyErrors">
+                                <input class="md-check__input" id="mdTlgHistoryOnlyErrors" type="checkbox" name="tlg_history_only_errors" value="1" data-md-raw-checkbox[#if HISTORY_ONLY_ERRORS="1"#] checked[#endif#]>
+                                <span class="md-check__box" aria-hidden="true"><i class="ti ti-check"></i></span>
+                                <span class="md-check__text">
+                                    <span class="md-check__label">Хранить только ошибки</span>
+                                    <span class="md-check__desc">Экономит место, но история сообщений будет пустой</span>
+                                </span>
+                            </label>
+                        </div>
+
+                        <div class="md-ui-form-grid">
+                            <div class="md-field">
+                                <label class="md-field__label" for="mdTlgHistoryDays">Хранить историю, дней<span class="md-tlg-help-tip" data-bs-toggle="tooltip" data-bs-title="Старые записи удаляются при каждом цикле."><i class="ti ti-info-circle" aria-hidden="true"></i></span></label>
+                                <div class="md-field__control">
+                                    <input type="number" class="md-input" id="mdTlgHistoryDays" name="tlg_history_days" value="[#HISTORY_DAYS#]" min="1" max="365" step="1" inputmode="numeric">
+                                </div>
+                                <div class="md-field__hint">Старые записи удаляются при каждом цикле.</div>
+                            </div>
+                            <div class="md-field">
+                                <span class="md-field__label">Юникод</span>
+                                <label class="md-check" for="mdTlgSaveUnicode">
+                                    <input class="md-check__input" id="mdTlgSaveUnicode" type="checkbox" name="tlg_save_unicode" value="1" data-md-raw-checkbox[#if SAVE_UNICODE="1"#] checked[#endif#]>
+                                    <span class="md-check__box" aria-hidden="true"><i class="ti ti-check"></i></span>
+                                    <span class="md-check__text">
+                                        <span class="md-check__label">Хранить эмодзи и юникод</span>
+                                        <span class="md-check__desc">Переводит MESSAGE/RAW на utf8mb4 (нужен MySQL 5.7+)</span>
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div class="md-ui-form-actions md-tlg-form-actions">
+            <button type="submit" class="md-btn md-btn--primary">
+                <i class="ti ti-device-floppy" aria-hidden="true"></i><span class="md-btn__label">Сохранить настройки</span>
+            </button>
+            <a href="<#ROOTHTML#>panel/telegram.html?tab=overview" class="md-btn md-btn--secondary">Отмена</a>
+            <span class="md-tlg-muted">Токен: [#TOKEN_MASK#][#if TOKEN_SET="1" AND TOKEN_VALID="0"#] · формат требует проверки[#endif#]</span>
+        </div>
+
+        <input type="hidden" name="view_mode" value="update_settings">
+        <input type="hidden" name="mode" value="update">
+        <input type="hidden" name="tab" value="settings">
+    </form>
+</div>
+
+
+

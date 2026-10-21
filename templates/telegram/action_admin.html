@@ -1,48 +1,26 @@
- <!-- action usual -->
- <style>
-.panel_icon {
-	font-size:23px;
-}
-.text-success {
-	color:#5cb85c;
-}
-</style>
- [#if DATA_SOURCE="telegram" || DATA_SOURCE=""#]
- <!-- table mysensor search -->
- [#if VIEW_MODE="search_mysensors" || VIEW_MODE=""#]
-  [#inc search_admin.html#]
- [#endif VIEW_MODE#]
+<!--#
+ @version 2.0
+#-->
+<link rel="stylesheet" href="<#ROOTHTML#>assets/modules/telegram/telegram.css?v=2026-10-21-1">
+<script src="<#ROOTHTML#>assets/modules/telegram/telegram.js?v=2026-10-21-1" defer></script>
 
- <!-- table node edit -->
- [#if VIEW_MODE="user_edit"#]
-    <a class="btn btn-defaul btn-primary" href="?">&lt;&lt;&lt; <#LANG_BACK#></a>
-    <p align=center>
-    [#if ID!=""#]
-	[#if USER_ID!=""#]
-	<img src="<#ROOTHTML#>cms/cached/telegram/[#USER_ID#].jpg" height="50px" onerror="this.src='<#ROOTHTML#>templates/telegram/img/none.jpg'">
-	<br>
-	[#endif USER_ID#]
-    [#if NAME!=""#]<#LANG_USER#>: <strong>[#NAME#]</strong>[#endif NAME#]
-    [#endif ID#]   
-	</p>  
-    [#inc user_edit.html#]
-[#endif VIEW_MODE#]
-[#if VIEW_MODE="cmd_edit"#]
-    <a class="btn btn-defaul btn-primary" href="?tab=cmd">&lt;&lt;&lt; <#LANG_BACK#></a>
-    <p align=center>
-    [#if ID!=""#]
-        [#if TITLE!=""#]<#LANG_TLG_COMMAND#>: <strong>[#TITLE#]</strong>[#endif TITLE#]
-    [#endif ID#]   
-	</p>  
-    [#inc cmd_edit.html#]
-[#endif VIEW_MODE#]
-[#if VIEW_MODE="event_edit"#]
-    <a class="btn btn-defaul btn-primary" href="?tab=events">&lt;&lt;&lt; <#LANG_BACK#></a>
-    <p align=center>
-    [#if ID!=""#]
-        [#if TITLE!=""#]<#LANG_TLG_EVENT#>:<strong>[#TITLE#]</strong>[#endif TITLE#]
-    [#endif ID#]   
-    </p>  
-    [#inc event_edit.html#]
-[#endif VIEW_MODE#]
-[#endif DATA_SOURCE#]
+[#if PAGE_MODE="settings"#]
+[#inc telegram_settings.html#]
+[#endif PAGE_MODE#]
+
+[#if PAGE_MODE="user"#]
+[#inc telegram_user_edit.html#]
+[#endif PAGE_MODE#]
+
+[#if PAGE_MODE="cmd"#]
+[#inc telegram_cmd_edit.html#]
+[#endif PAGE_MODE#]
+
+[#if PAGE_MODE="event"#]
+[#inc telegram_event_edit.html#]
+[#endif PAGE_MODE#]
+
+[#if PAGE_MODE="list"#]
+[#inc telegram_layout.html#]
+[#endif PAGE_MODE#]
+

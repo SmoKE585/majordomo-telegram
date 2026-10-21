@@ -1,0 +1,152 @@
+<!--#
+ Telegram message history.
+#-->
+<div class="md-ui-kpi-grid md-tlg-kpi-grid">
+    <div class="md-kpi md-kpi--primary">
+        <div class="md-kpi__top"><span class="md-kpi__icon"><i class="ti ti-list-details" aria-hidden="true"></i></span><span class="md-kpi__label">Всего записей</span></div>
+        <div class="md-kpi__value">[#STAT_TOTAL#]</div>
+        <div class="md-kpi__meta">Хранится [#STORAGE_DAYS#] дн.</div>
+    </div>
+    <div class="md-kpi md-kpi--info">
+        <div class="md-kpi__top"><span class="md-kpi__icon"><i class="ti ti-arrow-down-left" aria-hidden="true"></i></span><span class="md-kpi__label">Входящие</span></div>
+        <div class="md-kpi__value">[#STAT_IN#]</div>
+        <div class="md-kpi__meta">От пользователей и чатов</div>
+    </div>
+    <div class="md-kpi md-kpi--success">
+        <div class="md-kpi__top"><span class="md-kpi__icon"><i class="ti ti-arrow-up-right" aria-hidden="true"></i></span><span class="md-kpi__label">Отправлено</span></div>
+        <div class="md-kpi__value">[#STAT_OUT#]</div>
+        <div class="md-kpi__meta">Бот и сценарии</div>
+    </div>
+    <div class="md-kpi [#if STAT_ERR!="0"#]md-kpi--danger[#else#]md-kpi--neutral[#endif#]">
+        <div class="md-kpi__top"><span class="md-kpi__icon"><i class="ti ti-alert-triangle" aria-hidden="true"></i></span><span class="md-kpi__label">Ошибки</span></div>
+        <div class="md-kpi__value">[#STAT_ERR#]</div>
+        <div class="md-kpi__meta">Повторы и пропуски: [#STAT_RETRY#]</div>
+    </div>
+</div>
+
+<section class="md-card md-tlg-table-card" aria-labelledby="mdTlgHistoryTitle">
+    <header class="md-card__head">
+        <div class="md-card__titles">
+            <div class="md-card__eyebrow">Журнал сообщений</div>
+            <h2 class="md-card__title" id="mdTlgHistoryTitle"><i class="ti ti-history" aria-hidden="true"></i>История</h2>
+            <p class="md-card__subtitle">Входящие обновления, отправленные сообщения и ошибки доставки. RAW-запись открывается в боковой панели.</p>
+        </div>
+        <div class="md-card__actions">
+            <a href="[#EXPORT_URL#]" class="md-btn md-btn--ghost md-btn--sm">
+                <i class="ti ti-file-download" aria-hidden="true"></i><span class="md-btn__label">CSV</span>
+            </a>
+            <a href="<#ROOTHTML#>panel/telegram.html?view_mode=clear_history" class="md-btn md-btn--danger md-btn--sm" data-md-confirm="Удалить всю историю сообщений? Действие необратимо.">
+                <i class="ti ti-trash" aria-hidden="true"></i><span class="md-btn__label">Очистить</span>
+            </a>
+        </div>
+    </header>
+
+    <form action="<#ROOTHTML#>panel/telegram.html" method="get" class="md-tlg-filterbar" name="frmHistoryFilter">
+        <input type="hidden" name="tab" value="history">
+        <label class="md-tlg-filterbar__search">
+            <i class="ti ti-search" aria-hidden="true"></i>
+            <input type="search" name="q" value="[#FILTER_Q#]" placeholder="Текст сообщения или chat_id" aria-label="Поиск по истории" autocomplete="off">
+        </label>
+        <select name="direction" class="md-select" aria-label="Направление">
+            <option value="" [#if FILTER_DIRECTION=""#]selected[#endif#]>Все направления</option>
+            <option value="0" [#if FILTER_DIRECTION="0"#]selected[#endif#]>Входящие</option>
+            <option value="1" [#if FILTER_DIRECTION="1"#]selected[#endif#]>Отправленные</option>
+            <option value="2" [#if FILTER_DIRECTION="2"#]selected[#endif#]>Ошибки</option>
+            <option value="3" [#if FILTER_DIRECTION="3"#]selected[#endif#]>Повторы</option>
+            <option value="4" [#if FILTER_DIRECTION="4"#]selected[#endif#]>Пропущенные</option>
+        </select>
+        <select name="type" class="md-select" aria-label="Тип сообщения">
+            <option value="" [#if FILTER_TYPE=""#]selected[#endif#]>Все типы</option>
+            [#begin TYPE_OPTIONS#]
+            <option value="[#VALUE#]" [#if SELECTED="1"#]selected[#endif#]>[#LABEL#]</option>
+            [#end TYPE_OPTIONS#]
+        </select>
+        <select name="chat_id" class="md-select" aria-label="Чат">
+            <option value="" [#if FILTER_CHAT_ID=""#]selected[#endif#]>Все чаты</option>
+            [#begin CHAT_OPTIONS#]
+            <option value="[#VALUE#]" [#if SELECTED="1"#]selected[#endif#]>[#LABEL#]</option>
+            [#end CHAT_OPTIONS#]
+        </select>
+        <button type="submit" class="md-btn md-btn--secondary md-btn--sm"><i class="ti ti-filter" aria-hidden="true"></i>Применить</button>
+        [#if HAS_FILTERS="1"#]<a href="[#RESET_URL#]" class="md-btn md-btn--ghost md-btn--sm">Сбросить</a>[#endif#]
+    </form>
+
+    [#if HAS_ROWS="1"#]
+    <div class="md-table__scroll">
+        <table class="md-table md-tlg-history-table">
+            <thead>
+                <tr>
+                    <th scope="col">Время</th>
+                    <th scope="col">Направление</th>
+                    <th scope="col">Тип</th>
+                    <th scope="col">Чат</th>
+                    <th scope="col">Сообщение</th>
+                    <th scope="col" class="text-end"><span class="md-visually-hidden">Действия</span></th>
+                </tr>
+            </thead>
+            <tbody>
+                [#begin RESULT#]
+                <tr class="[#if IS_ERROR="1"#]md-tlg-row-error[#endif#]">
+                    <td><span class="md-tlg-time" title="[#CREATED_EXACT#]">[#CREATED_HUMAN#]</span></td>
+                    <td><span class="md-badge md-badge--[#DIRECTION_TONE#]"><i class="ti ti-[#DIRECTION_ICON#]" aria-hidden="true"></i>[#DIRECTION_LABEL#]</span></td>
+                    <td><span class="md-tlg-type"><i class="ti ti-[#TYPE_ICON#]" aria-hidden="true"></i>[#TYPE_LABEL#]</span></td>
+                    <td>
+                        <span class="md-tlg-user-cell">
+                            [#if USER_LINK!=""#]<a class="md-tlg-user-cell__name" href="[#USER_LINK#]" target="_blank" rel="noopener">[#USER_NAME#]</a>[#else#]<span class="md-tlg-user-cell__name">[#USER_NAME#]</span>[#endif#]
+                            <span class="md-tlg-user-cell__id">[#USER_ID#]</span>
+                        </span>
+                    </td>
+                    <td><span class="md-tlg-message-preview" title="[#MESSAGE_FULL#]">[#MESSAGE#]</span></td>
+                    <td class="text-end">
+                        <div class="md-table__actions">
+                            <button type="button" class="md-icon-btn md-icon-btn--sm" data-md-tlg-raw="[#ID#]" data-bs-toggle="tooltip" data-bs-title="Показать RAW" aria-label="Показать RAW запись [#ID#]">
+                                <i class="ti ti-braces" aria-hidden="true"></i>
+                            </button>
+                            <a href="[#DELETE_URL#]" class="md-icon-btn md-icon-btn--sm md-icon-btn--danger" data-bs-toggle="tooltip" data-bs-title="Удалить" aria-label="Удалить запись [#ID#]" data-md-confirm="Удалить эту запись истории?">
+                                <i class="ti ti-trash" aria-hidden="true"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                [#end RESULT#]
+            </tbody>
+        </table>
+    </div>
+    <div class="md-table__footer">
+        <span>Показано [#SHOW_FROM#]–[#SHOW_TO#] из [#TOTAL#]</span>
+        [#if HAS_PAGES="1"#]
+        <ul class="pagination md-pagination mb-0">
+            <li class="page-item [#if PAGE_PREV=""#]disabled[#endif#]">
+                [#if PAGE_PREV!=""#]<a class="page-link" href="[#PAGE_PREV#]" aria-label="Назад"><i class="ti ti-chevron-left" aria-hidden="true"></i></a>[#else#]<span class="page-link"><i class="ti ti-chevron-left" aria-hidden="true"></i></span>[#endif#]
+            </li>
+            [#begin PAGE_ITEMS#]
+            [#if ELLIPSIS="1"#]
+            <li class="page-item disabled"><span class="page-link">…</span></li>
+            [#else#]
+            <li class="page-item [#if SELECTED="1"#]active[#endif#]"><a class="page-link" href="[#URL#]">[#NUM#]</a></li>
+            [#endif#]
+            [#end PAGE_ITEMS#]
+            <li class="page-item [#if PAGE_NEXT=""#]disabled[#endif#]">
+                [#if PAGE_NEXT!=""#]<a class="page-link" href="[#PAGE_NEXT#]" aria-label="Вперёд"><i class="ti ti-chevron-right" aria-hidden="true"></i></a>[#else#]<span class="page-link"><i class="ti ti-chevron-right" aria-hidden="true"></i></span>[#endif#]
+            </li>
+        </ul>
+        [#endif#]
+    </div>
+    [#else#]
+    <div class="md-card__body">
+        <div class="md-empty">
+            <span class="md-empty__icon"><i class="ti ti-history-off" aria-hidden="true"></i></span>
+            <div class="md-empty__title">[#if HAS_FILTERS="1"#]Ничего не найдено[#else#]История пуста[#endif#]</div>
+            <p class="md-empty__text">[#if HAS_FILTERS="1"#]Попробуйте другой период, направление или сбросьте фильтры.[#else#]Здесь появятся входящие и исходящие сообщения. Если включён режим «только ошибки», успешные сообщения не сохраняются.[#endif#]</p>
+            <div class="md-empty__actions">
+                [#if HAS_FILTERS="1"#]
+                <a href="[#RESET_URL#]" class="md-btn md-btn--secondary md-btn--sm">Сбросить фильтры</a>
+                [#else#]
+                <a href="<#ROOTHTML#>panel/telegram.html?tab=overview" class="md-btn md-btn--secondary md-btn--sm">К обзору</a>
+                [#endif#]
+            </div>
+        </div>
+    </div>
+    [#endif#]
+</section>
+

@@ -1,0 +1,183 @@
+<!--#
+ Telegram commands list.
+#-->
+<section class="md-card md-tlg-table-card" aria-labelledby="mdTlgCommandsTitle">
+    <header class="md-card__head">
+        <div class="md-card__titles">
+            <div class="md-card__eyebrow">Обработчики</div>
+            <h2 class="md-card__title" id="mdTlgCommandsTitle"><i class="ti ti-terminal-2" aria-hidden="true"></i>Команды</h2>
+            <p class="md-card__subtitle">Команда — это слово в чате и кнопка в клавиатуре. Код выполняется в контексте модуля и может вернуть текст ответа.</p>
+        </div>
+        <div class="md-card__actions">
+            <div class="dropdown">
+                <button type="button" class="md-btn md-btn--ghost md-btn--sm" data-bs-toggle="dropdown" aria-expanded="false">
+                    <span class="md-btn__label">Ещё</span><i class="ti ti-chevron-down" aria-hidden="true"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end md-menu">
+                    <li><a class="dropdown-item" href="<#ROOTHTML#>panel/telegram.html?view_mode=sync_commands" data-md-confirm="Отправить список команд в меню Telegram?"><i class="ti ti-list-check" aria-hidden="true"></i>Обновить меню Telegram</a></li>
+                    <li><button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#mdTlgImportCommandModal"><i class="ti ti-file-import" aria-hidden="true"></i>Импорт команд</button></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="<#ROOTHTML#>panel/telegram.html?tab=help#commands"><i class="ti ti-help-circle" aria-hidden="true"></i>Примеры команд</a></li>
+                </ul>
+            </div>
+            <a href="<#ROOTHTML#>panel/telegram.html?view_mode=edit_cmd" class="md-btn md-btn--primary md-btn--sm">
+                <i class="ti ti-plus" aria-hidden="true"></i><span class="md-btn__label">Добавить команду</span>
+            </a>
+        </div>
+    </header>
+
+    <form action="<#ROOTHTML#>panel/telegram.html" method="get" class="md-tlg-filterbar" name="frmCommandsFilter">
+        <input type="hidden" name="tab" value="commands">
+        <label class="md-tlg-filterbar__search">
+            <i class="ti ti-search" aria-hidden="true"></i>
+            <input type="search" name="q" value="[#FILTER_Q#]" placeholder="Название, псевдоним, описание или код" aria-label="Поиск команд" autocomplete="off">
+        </label>
+        <select name="access" class="md-select" aria-label="Фильтр по доступу">
+            <option value="" [#if FILTER_ACCESS=""#]selected[#endif#]>Любой доступ</option>
+            <option value="0" [#if FILTER_ACCESS="0"#]selected[#endif#]>Отключены</option>
+            <option value="1" [#if FILTER_ACCESS="1"#]selected[#endif#]>Администраторы</option>
+            <option value="2" [#if FILTER_ACCESS="2"#]selected[#endif#]>Избранные</option>
+            <option value="3" [#if FILTER_ACCESS="3"#]selected[#endif#]>Все</option>
+        </select>
+        <select name="sort" class="md-select" aria-label="Сортировка">
+            <option value="priority" [#if FILTER_SORT="priority"#]selected[#endif#]>По приоритету</option>
+            <option value="runs" [#if FILTER_SORT="runs"#]selected[#endif#]>По запускам</option>
+            <option value="title" [#if FILTER_SORT="title"#]selected[#endif#]>По названию</option>
+            <option value="access" [#if FILTER_SORT="access"#]selected[#endif#]>По доступу</option>
+        </select>
+        <button type="submit" class="md-btn md-btn--secondary md-btn--sm"><i class="ti ti-filter" aria-hidden="true"></i>Применить</button>
+        [#if HAS_FILTERS="1"#]<a href="[#RESET_URL#]" class="md-btn md-btn--ghost md-btn--sm">Сбросить</a>[#endif#]
+    </form>
+
+    [#if HAS_ROWS="1"#]
+    <div class="md-table__scroll">
+        <table class="md-table md-tlg-commands-table">
+            <thead>
+                <tr>
+                    <th scope="col">Команда</th>
+                    <th scope="col">Доступ</th>
+                    <th scope="col">Клавиатура</th>
+                    <th scope="col">Запуски</th>
+                    <th scope="col" class="text-end"><span class="md-visually-hidden">Действия</span></th>
+                </tr>
+            </thead>
+            <tbody>
+                [#begin COMMANDS#]
+                <tr>
+                    <td>
+                        <div class="md-tlg-command">
+                            <span class="md-tlg-command__slash">/</span>
+                            <div class="md-tlg-command__body">
+                                <a href="[#EDIT_URL#]" class="md-tlg-command__title">[#TITLE#]</a>
+                                [#if DESCRIPTION!=""#]<span class="md-tlg-command__desc">[#DESCRIPTION#]</span>[#endif#]
+                                <span class="md-tlg-command__meta">
+                                    [#if HAS_ALIASES="1"#]<span class="md-tlg-muted">псевдонимы: [#ALIASES#]</span>[#endif#]
+                                    [#if HAS_CODE="1"#]<code class="md-tlg-code-inline" title="[#CODE_PREVIEW#]">[#CODE_PREVIEW#]</code>[#else#]<span class="md-badge md-badge--outline">передать в сценарии</span>[#endif#]
+                                </span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="md-badge md-badge--[#ACCESS_TONE#]">[#ACCESS_LABEL#]</span>
+                        [#if USERS_COUNT!="0"#]<span class="md-tlg-time-sub">пользователей: [#USERS_COUNT#]</span>[#endif#]
+                    </td>
+                    <td><span class="md-badge md-badge--[#SHOW_TONE#]">[#SHOW_LABEL#]</span></td>
+                    <td>
+                        <span class="md-tlg-runs">[#RUNS#]</span>
+                        <span class="md-tlg-time-sub" title="[#LAST_RUN_HUMAN#]">[#LAST_RUN_HUMAN#]</span>
+                    </td>
+                    <td class="text-end">
+                        <div class="md-table__actions">
+                            <a href="[#EDIT_URL#]" class="md-icon-btn md-icon-btn--sm" data-bs-toggle="tooltip" data-bs-title="Редактировать" aria-label="Редактировать команду [#TITLE#]">
+                                <i class="ti ti-pencil" aria-hidden="true"></i>
+                            </a>
+                            <a href="[#EXPORT_URL#]" class="md-icon-btn md-icon-btn--sm" data-bs-toggle="tooltip" data-bs-title="Экспорт JSON" aria-label="Экспорт команды [#TITLE#]">
+                                <i class="ti ti-download" aria-hidden="true"></i>
+                            </a>
+                            <a href="[#DELETE_URL#]" class="md-icon-btn md-icon-btn--sm md-icon-btn--danger" data-bs-toggle="tooltip" data-bs-title="Удалить" aria-label="Удалить команду [#TITLE#]" data-md-confirm="Удалить команду [#TITLE#]?">
+                                <i class="ti ti-trash" aria-hidden="true"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                [#end COMMANDS#]
+            </tbody>
+        </table>
+    </div>
+    <div class="md-table__footer">
+        <span>Показано [#SHOW_FROM#]–[#SHOW_TO#] из [#TOTAL#]</span>
+        [#if HAS_PAGES="1"#]
+        <ul class="pagination md-pagination mb-0">
+            <li class="page-item [#if PAGE_PREV=""#]disabled[#endif#]">
+                [#if PAGE_PREV!=""#]<a class="page-link" href="[#PAGE_PREV#]" aria-label="Назад"><i class="ti ti-chevron-left" aria-hidden="true"></i></a>[#else#]<span class="page-link"><i class="ti ti-chevron-left" aria-hidden="true"></i></span>[#endif#]
+            </li>
+            [#begin PAGE_ITEMS#]
+            [#if ELLIPSIS="1"#]
+            <li class="page-item disabled"><span class="page-link">…</span></li>
+            [#else#]
+            <li class="page-item [#if SELECTED="1"#]active[#endif#]"><a class="page-link" href="[#URL#]">[#NUM#]</a></li>
+            [#endif#]
+            [#end PAGE_ITEMS#]
+            <li class="page-item [#if PAGE_NEXT=""#]disabled[#endif#]">
+                [#if PAGE_NEXT!=""#]<a class="page-link" href="[#PAGE_NEXT#]" aria-label="Вперёд"><i class="ti ti-chevron-right" aria-hidden="true"></i></a>[#else#]<span class="page-link"><i class="ti ti-chevron-right" aria-hidden="true"></i></span>[#endif#]
+            </li>
+        </ul>
+        [#endif#]
+    </div>
+    [#else#]
+    <div class="md-card__body">
+        <div class="md-empty">
+            <span class="md-empty__icon"><i class="ti ti-terminal-2" aria-hidden="true"></i></span>
+            <div class="md-empty__title">[#if HAS_FILTERS="1"#]Ничего не найдено[#else#]Команд пока нет[#endif#]</div>
+            <p class="md-empty__text">[#if HAS_FILTERS="1"#]Измените запрос или сбросьте фильтры.[#else#]Создайте команду с кодом, который возвращает текст ответа. Например, /ping → Pong!.[#endif#]</p>
+            <div class="md-empty__actions">
+                [#if HAS_FILTERS="1"#]
+                <a href="[#RESET_URL#]" class="md-btn md-btn--secondary md-btn--sm">Сбросить фильтры</a>
+                [#else#]
+                <a href="<#ROOTHTML#>panel/telegram.html?view_mode=edit_cmd" class="md-btn md-btn--primary md-btn--sm"><i class="ti ti-plus" aria-hidden="true"></i>Добавить команду</a>
+                [#endif#]
+            </div>
+        </div>
+    </div>
+    [#endif#]
+</section>
+
+<div class="modal fade md-modal" id="mdTlgImportCommandModal" tabindex="-1" aria-labelledby="mdTlgImportCommandTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <form class="modal-content" action="<#ROOTHTML#>panel/telegram.html?view_mode=import_command" method="post" enctype="multipart/form-data">
+            <div class="modal-header">
+                <h2 class="modal-title" id="mdTlgImportCommandTitle">Импорт команды</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+            </div>
+            <div class="modal-body">
+                <div class="md-field">
+                    <label class="md-field__label" for="mdTlgImportCommandFile">JSON-файл</label>
+                    <div class="md-field__control">
+                        <input type="file" class="md-input" id="mdTlgImportCommandFile" name="import_file" accept=".json,.txt,application/json">
+                    </div>
+                    <div class="md-field__hint">Файл, полученный кнопкой «Экспорт JSON» на карточке команды.</div>
+                </div>
+                <div class="md-field">
+                    <label class="md-field__label" for="mdTlgImportCommandJson">или вставьте JSON</label>
+                    <div class="md-field__control">
+                        <textarea class="md-input" id="mdTlgImportCommandJson" name="import_json" rows="5" placeholder='{"TITLE":"Ping","CODE":"return &quot;Pong!&quot;;"}'></textarea>
+                    </div>
+                </div>
+                <label class="md-check" for="mdTlgImportCommandOverwrite">
+                    <input class="md-check__input" id="mdTlgImportCommandOverwrite" type="checkbox" name="overwrite" value="1" data-md-raw-checkbox>
+                    <span class="md-check__box" aria-hidden="true"><i class="ti ti-check"></i></span>
+                    <span class="md-check__text">
+                        <span class="md-check__label">Перезаписать совпадение</span>
+                        <span class="md-check__desc">Иначе будет создана копия с суффиксом _copy</span>
+                    </span>
+                </label>
+                <input type="hidden" name="tab" value="commands">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="md-btn md-btn--ghost" data-bs-dismiss="modal">Отмена</button>
+                <button type="submit" class="md-btn md-btn--primary"><i class="ti ti-file-import" aria-hidden="true"></i>Импортировать</button>
+            </div>
+        </form>
+    </div>
+</div>
+
