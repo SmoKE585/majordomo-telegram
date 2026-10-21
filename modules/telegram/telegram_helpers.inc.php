@@ -119,7 +119,7 @@ if (!function_exists('md_tlg_mask_token')) {
             list($id, $secret) = explode(':', $token, 2);
             $id .= ':';
         }
-        return $id . substr($secret, 0, 4) . str_repeat('•', 10) . substr($secret, -4);
+        return $id . '••••' . substr($secret, -4);
     }
 }
 

@@ -25,45 +25,34 @@ body.md-admin-shell .md-tlg-hero__text {
     min-width: 0;
 }
 
-body.md-admin-shell .md-tlg-bot-avatar {
+body.md-admin-shell .md-tlg-user-avatar {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     flex: 0 0 auto;
-    width: 72px;
-    height: 72px;
-    border-radius: 22px;
+    width: 64px;
+    height: 64px;
+    border-radius: 20px;
     overflow: hidden;
     background: var(--md-ui-surface-2);
     border: 1px solid var(--md-ui-border);
     color: var(--md-ui-primary);
-    font-size: 1.6rem;
+    font-size: 1.35rem;
 }
 
-body.md-admin-shell .md-tlg-bot-avatar img {
+body.md-admin-shell .md-tlg-user-avatar img {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
 
-body.md-admin-shell .md-tlg-bot-avatar--initials {
+body.md-admin-shell .md-tlg-user-avatar--initials {
     background: var(--md-ui-primary-soft);
     border-color: transparent;
     color: var(--md-ui-primary);
-    font-size: 1.5rem;
+    font-size: 1.35rem;
     font-weight: 600;
     letter-spacing: .03em;
-}
-
-body.md-admin-shell .md-tlg-bot-avatar--initials:hover {
-    color: var(--md-ui-primary);
-}
-
-body.md-admin-shell .md-tlg-bot-avatar--sm {
-    width: 36px;
-    height: 36px;
-    border-radius: 11px;
-    font-size: 1rem;
 }
 
 body.md-admin-shell .md-tlg-status {
@@ -160,39 +149,151 @@ body.md-admin-shell .md-tlg-help-tip:hover {
     color: var(--md-ui-primary);
 }
 
-body.md-admin-shell .md-tlg-facts {
+body.md-admin-shell .md-tlg-connection-groups {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 2px 20px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 14px;
+}
+
+body.md-admin-shell .md-tlg-fact-group {
+    min-width: 0;
+    padding: 2px 12px 4px;
+    background: var(--md-ui-surface-2);
+    border: 1px solid var(--md-ui-border);
+    border-radius: var(--md-ui-radius-sm);
+}
+
+body.md-admin-shell .md-tlg-fact-group__title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    padding: 9px 0 6px;
+    color: var(--md-ui-muted);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+
+body.md-admin-shell .md-tlg-fact-group__title i {
+    font-size: .95rem;
+}
+
+body.md-admin-shell .md-tlg-facts {
     margin: 0;
 }
 
 body.md-admin-shell .md-tlg-fact {
     display: grid;
-    grid-template-columns: minmax(120px, auto) minmax(0, 1fr);
+    grid-template-columns: minmax(104px, 38%) minmax(0, 1fr);
     align-items: baseline;
     gap: 10px;
-    padding: 9px 0;
-    border-bottom: 1px dashed var(--md-ui-border);
+    padding: 8px 0;
+    border-top: 1px solid var(--md-ui-border);
     min-width: 0;
 }
 
 body.md-admin-shell .md-tlg-fact dt {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
     margin: 0;
     color: var(--md-ui-muted);
-    font-size: var(--md-ui-fs-xs);
+    font-size: 11.5px;
     font-weight: 500;
 }
 
 body.md-admin-shell .md-tlg-fact dd {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
     margin: 0;
     min-width: 0;
-    color: var(--md-ui-text-soft);
-    font-size: var(--md-ui-fs-xs);
+    color: var(--md-ui-text);
+    font-size: 11.5px;
     overflow-wrap: anywhere;
+}
+
+body.md-admin-shell .md-tlg-fact dd.md-tlg-fact__value--stack {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 3px;
+}
+
+body.md-admin-shell .md-tlg-fact code {
+    color: var(--md-ui-text-soft);
+    background: transparent;
+}
+
+body.md-admin-shell .md-tlg-token {
+    display: inline-block;
+    max-width: 100%;
+    overflow: hidden;
+    padding: 1px 6px;
+    border: 1px solid var(--md-ui-border);
+    border-radius: 4px;
+    background: var(--md-ui-surface);
+    color: var(--md-ui-text-soft);
+    font-family: var(--md-ui-font-mono);
+    font-size: 10.5px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+body.md-admin-shell .md-tlg-webhook-link {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+    color: var(--md-ui-primary);
+    font-family: var(--md-ui-font-mono);
+    font-size: 10.5px;
+    white-space: nowrap;
+}
+
+body.md-admin-shell .md-tlg-webhook-link__text {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+body.md-admin-shell .md-tlg-webhook-link i {
+    flex: 0 0 auto;
+    font-size: .85rem;
+}
+
+body.md-admin-shell .md-tlg-connection-foot {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 16px;
+    margin-top: 10px;
+    padding-top: 9px;
+    border-top: 1px dashed var(--md-ui-border);
+    color: var(--md-ui-muted);
+    font-size: 10.5px;
+}
+
+body.md-admin-shell .md-tlg-connection-foot span,
+body.md-admin-shell .md-tlg-connection-foot a {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    min-width: 0;
+}
+
+body.md-admin-shell .md-tlg-connection-foot a {
+    color: var(--md-ui-primary);
+}
+
+body.md-admin-shell .md-tlg-connection-foot code {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--md-ui-text-soft);
+    font-size: 10.5px;
 }
 
 body.md-admin-shell .md-tlg-code-inline {
@@ -1457,10 +1558,14 @@ body.md-admin-shell .md-tlg-trouble__item p {
         justify-content: center;
     }
 
-    body.md-admin-shell .md-tlg-bot-avatar {
+    body.md-admin-shell .md-tlg-user-avatar {
         width: 56px;
         height: 56px;
         border-radius: 16px;
+    }
+
+    body.md-admin-shell .md-tlg-connection-groups {
+        grid-template-columns: minmax(0, 1fr);
     }
 
     body.md-admin-shell .md-tlg-fact {

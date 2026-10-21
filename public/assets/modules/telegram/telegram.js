@@ -248,19 +248,6 @@
                 result.appendChild(meta);
             }
 
-            if (data.avatar) {
-                qsa('.md-tlg-bot-avatar').forEach(function (holder) {
-                    holder.classList.remove('md-tlg-bot-avatar--empty');
-                    holder.innerHTML = '';
-                    var image = document.createElement('img');
-                    image.src = data.avatar;
-                    image.alt = '';
-                    image.width = holder.classList.contains('md-tlg-bot-avatar--sm') ? 36 : 72;
-                    image.height = image.width;
-                    holder.appendChild(image);
-                });
-            }
-
             toast('success', 'Связь с Telegram есть', (bot.username ? '@' + bot.username + ' · ' : '') + (data.latency_ms || 0) + ' мс');
         });
     }

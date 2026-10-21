@@ -1213,7 +1213,6 @@ class telegram extends module
         $out['BOT_NAME'] = md_tlg_h($this->config['TLG_BOT_NAME']);
         $out['BOT_USERNAME'] = md_tlg_h($this->config['TLG_BOT_USERNAME']);
         $out['BOT_ID'] = md_tlg_h($this->config['TLG_BOT_ID']);
-        $out['BOT_AVATAR'] = md_tlg_bot_avatar($this->config['TLG_BOT_ID']);
         $out['BOT_LINK'] = $this->config['TLG_BOT_USERNAME'] !== '' ? 'https://t.me/' . rawurlencode($this->config['TLG_BOT_USERNAME']) : '';
         $out['BOT_CHECKED_HUMAN'] = md_tlg_relative_time($this->config['TLG_BOT_CHECKED']);
         $out['LAST_CHECK_HUMAN'] = md_tlg_relative_time($this->config['TLG_LAST_CHECK']);
@@ -1633,10 +1632,8 @@ class telegram extends module
         $out['BOT_NAME'] = md_tlg_h($this->config['TLG_BOT_NAME']);
         $out['BOT_USERNAME'] = md_tlg_h($this->config['TLG_BOT_USERNAME']);
         $out['BOT_ID'] = md_tlg_h($this->config['TLG_BOT_ID']);
-        $out['BOT_AVATAR'] = md_tlg_bot_avatar($this->config['TLG_BOT_ID']);
         $out['BOT_LINK'] = $this->config['TLG_BOT_USERNAME'] !== '' ? 'https://t.me/' . rawurlencode($this->config['TLG_BOT_USERNAME']) : '';
         $out['BOT_TITLE'] = $out['BOT_NAME'] !== '' ? $out['BOT_NAME'] : 'Telegram-бот';
-        $out['BOT_INITIALS'] = md_tlg_h(md_tlg_initials($this->config['TLG_BOT_NAME'] !== '' ? $this->config['TLG_BOT_NAME'] : 'Telegram'));
         $out['BOT_SUBTITLE'] = $out['BOT_USERNAME'] !== '' ? '@' . $out['BOT_USERNAME'] : 'Бот ещё не проверен';
         $out['TRANSPORT_LABEL'] = md_tlg_h($this->api->describeTransport());
         $out['TRANSPORT'] = md_tlg_h($this->config['TLG_TRANSPORT']);
@@ -1740,7 +1737,16 @@ class telegram extends module
         }
         $out['HAS_RECENT_ERRORS'] = !empty($out['RECENT_ERRORS']) ? 1 : 0;
 
-        $out['WEBHOOK_URL_VALUE'] = md_tlg_h($this->config['TLG_WEBHOOK_URL'] !== '' ? $this->config['TLG_WEBHOOK_URL'] : rtrim(BASE_URL, '/') . '/webhook_telegram.php');
+        $webhookUrl = $this->config['TLG_WEBHOOK_URL'] !== ''
+            ? (string)$this->config['TLG_WEBHOOK_URL']
+            : rtrim(BASE_URL, '/') . '/webhook_telegram.php';
+        $out['WEBHOOK_URL_VALUE'] = md_tlg_h($webhookUrl);
+        $webhookParts = parse_url($webhookUrl);
+        $webhookHost = isset($webhookParts['host']) ? $webhookParts['host'] : '';
+        if ($webhookHost !== '' && !empty($webhookParts['port'])) {
+            $webhookHost .= ':' . (int)$webhookParts['port'];
+        }
+        $out['WEBHOOK_URL_SHORT'] = md_tlg_h($webhookHost !== '' ? $webhookHost . '/…' : md_tlg_truncate($webhookUrl, 38));
         $out['ALLOWED_UPDATES_COUNT'] = count($this->allowedUpdatesArray());
         $out['STORAGE_EFFECTIVE'] = md_tlg_h(md_tlg_storage_dir($this->config));
         $out['STORAGE_LABEL'] = md_tlg_h($this->config['TLG_STORAGE']);

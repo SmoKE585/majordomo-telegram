@@ -54,46 +54,70 @@
                 [#endif#]
             </div>
 
-            <dl class="md-tlg-facts">
-                <div class="md-tlg-fact">
-                    <dt><i class="ti ti-key" aria-hidden="true"></i>Токен</dt>
-                    <dd><code>[#TOKEN_MASK#]</code>[#if TOKEN_SET="1" AND TOKEN_VALID="0"#]<span class="md-badge md-badge--warning">проверьте формат</span>[#endif#]</dd>
-                </div>
-                <div class="md-tlg-fact">
-                    <dt><i class="ti ti-route" aria-hidden="true"></i>Транспорт</dt>
-                    <dd>[#TRANSPORT_LABEL#]</dd>
-                </div>
-                <div class="md-tlg-fact">
-                    <dt><i class="ti ti-arrows-exchange" aria-hidden="true"></i>Получение обновлений</dt>
-                    <dd><span class="md-badge md-badge--[#MODE_BADGE#]">[#MODE_LABEL#]</span></dd>
-                </div>
-                <div class="md-tlg-fact">
-                    <dt><i class="ti ti-clock-play" aria-hidden="true"></i>Цикл</dt>
-                    <dd><span class="md-tlg-status md-tlg-status--[#CYCLE_STATE#]"><span class="md-status__dot" aria-hidden="true"></span>[#CYCLE_LABEL#]</span></dd>
-                </div>
-                <div class="md-tlg-fact">
-                    <dt><i class="ti ti-webhook" aria-hidden="true"></i>Webhook</dt>
-                    <dd>
+            <div class="md-tlg-connection-groups">
+                <section class="md-tlg-fact-group" aria-labelledby="mdTlgFactConnect">
+                    <h3 class="md-tlg-fact-group__title" id="mdTlgFactConnect"><i class="ti ti-plug" aria-hidden="true"></i>Подключение</h3>
+                    <dl class="md-tlg-facts">
+                        <div class="md-tlg-fact">
+                            <dt>Токен</dt>
+                            <dd class="md-tlg-fact__value--stack">
+                                [#if TOKEN_SET="1"#]
+                                <code class="md-tlg-token" title="Маскированный токен">[#TOKEN_MASK#]</code>
+                                [#if TOKEN_VALID="0"#]
+                                <span class="md-badge md-badge--warning">проверьте формат</span>
+                                [#else#]
+                                [#if BOT_CHECKED="1"#]<span class="md-badge md-badge--success">рабочий</span>[#else#]<span class="md-badge md-badge--outline">не проверен</span>[#endif#]
+                                [#endif#]
+                                [#else#]
+                                <span class="md-badge md-badge--warning">не задан</span>
+                                [#endif#]
+                            </dd>
+                        </div>
+                        <div class="md-tlg-fact">
+                            <dt>Транспорт</dt>
+                            <dd>[#TRANSPORT_LABEL#]</dd>
+                        </div>
+                        <div class="md-tlg-fact">
+                            <dt>Типы обновлений</dt>
+                            <dd>[#ALLOWED_UPDATES_COUNT#] из 23</dd>
+                        </div>
+                    </dl>
+                </section>
+
+                <section class="md-tlg-fact-group" aria-labelledby="mdTlgFactDelivery">
+                    <h3 class="md-tlg-fact-group__title" id="mdTlgFactDelivery"><i class="ti ti-arrows-exchange" aria-hidden="true"></i>Доставка</h3>
+                    <dl class="md-tlg-facts">
+                        <div class="md-tlg-fact">
+                            <dt>Режим</dt>
+                            <dd><span class="md-badge md-badge--[#MODE_BADGE#]">[#MODE_LABEL#]</span></dd>
+                        </div>
                         [#if WEBHOOK_MODE="1"#]
-                        <code class="md-tlg-code-inline" title="[#WEBHOOK_URL_VALUE#]">[#WEBHOOK_URL_VALUE#]</code>
+                        <div class="md-tlg-fact">
+                            <dt>Webhook</dt>
+                            <dd>
+                                <a class="md-tlg-webhook-link" href="[#WEBHOOK_URL_VALUE#]" target="_blank" rel="noopener" title="[#WEBHOOK_URL_VALUE#]">
+                                    <i class="ti ti-external-link" aria-hidden="true"></i><span class="md-tlg-webhook-link__text">[#WEBHOOK_URL_SHORT#]</span>
+                                </a>
+                            </dd>
+                        </div>
                         [#else#]
-                        <span class="md-tlg-muted">не используется</span>
+                        <div class="md-tlg-fact">
+                            <dt>Цикл</dt>
+                            <dd><span class="md-tlg-status md-tlg-status--[#CYCLE_STATE#]"><span class="md-status__dot" aria-hidden="true"></span>[#CYCLE_LABEL#]</span></dd>
+                        </div>
                         [#endif#]
-                    </dd>
-                </div>
-                <div class="md-tlg-fact">
-                    <dt><i class="ti ti-filter" aria-hidden="true"></i>Типы обновлений</dt>
-                    <dd>[#ALLOWED_UPDATES_COUNT#] из 23</dd>
-                </div>
-                <div class="md-tlg-fact">
-                    <dt><i class="ti ti-folder" aria-hidden="true"></i>Хранилище файлов</dt>
-                    <dd><code class="md-tlg-code-inline" title="[#STORAGE_EFFECTIVE#]">[#STORAGE_LABEL#]</code></dd>
-                </div>
-                <div class="md-tlg-fact">
-                    <dt><i class="ti ti-clock" aria-hidden="true"></i>Последняя проверка</dt>
-                    <dd>[#LAST_CHECK_HUMAN#]</dd>
-                </div>
-            </dl>
+                        <div class="md-tlg-fact">
+                            <dt>Последняя проверка</dt>
+                            <dd>[#LAST_CHECK_HUMAN#]</dd>
+                        </div>
+                    </dl>
+                </section>
+            </div>
+
+            <div class="md-tlg-connection-foot">
+                <span><i class="ti ti-folder" aria-hidden="true"></i>Файлы: <code title="[#STORAGE_EFFECTIVE#]">[#STORAGE_LABEL#]</code></span>
+                <a href="<#ROOTHTML#>panel/telegram.html?view_mode=settings"><i class="ti ti-settings" aria-hidden="true"></i>Изменить</a>
+            </div>
 
             [#if LAST_ERROR!=""#]
             <div class="md-alert md-alert--danger md-tlg-compact-alert" role="alert">
